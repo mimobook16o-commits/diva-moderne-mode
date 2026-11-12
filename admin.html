@@ -57,6 +57,13 @@ a{color:var(--gold)}
 .cb input[type=color]{height:44px;padding:4px}
 .th{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.th div{position:relative}.th img{width:64px;height:80px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
 .th b{position:absolute;top:-6px;inset-inline-end:-6px;background:var(--pink);color:var(--plum);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+.sb{background:linear-gradient(160deg,rgba(60,31,68,.85),rgba(43,26,54,.85));border:1px solid var(--line);border-radius:20px;padding:12px 14px}
+.sb b{display:block;font:600 24px 'Cormorant Garamond',serif;color:var(--champ)}.sb span{color:var(--mut);font-size:14px}
+.ln{display:flex;gap:10px;align-items:center;margin:8px 0;background:rgba(33,20,43,.65);border:1px solid var(--line);border-radius:16px;padding:8px}
+.ln img{width:58px;height:72px;object-fit:cover;border-radius:12px;flex:none}.ln .ph{width:58px;height:72px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);flex:none}
+.ln div{font-size:14px;line-height:1.4}.ln small{color:var(--mut)}
+.sw{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);vertical-align:middle;margin-inline-end:6px}
 </style>
 </head>
 <body>
@@ -77,7 +84,7 @@ a{color:var(--gold)}
     <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
     <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button></div>
     <p class="err" id="ae"></p>
-    <div id="po"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
+    <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
     <div id="pp" class="hide"><div id="plist"></div><div id="pform" class="box fm hide"></div></div>
   </section>
 </main>
@@ -138,6 +145,9 @@ function render() {
   const counts = { all: orders.length };
   orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
   $("#cnt").textContent = orders.length + " طلبية";
+  const today = new Date().toDateString(), live = orders.filter(o => o.status !== "cancelled");
+  const st = [[orders.filter(o => o.status === "new").length, "طلبيات جديدة"], [orders.filter(o => o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString() === today).length, "طلبيات اليوم"], [orders.length, "كل الطلبيات"], [money(live.reduce((a, o) => a + Number(o.total || 0), 0)), "المبيعات (بدون الملغاة)"]];
+  $("#stats").textContent = ""; st.forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); $("#stats").append(b); });
   const chips = $("#chips"); chips.textContent = "";
   [["all", "الكل"], ...Object.entries(STATUS)].forEach(([k, label]) => {
     const b = el("button", "chip" + (filter === k ? " on" : ""), label + " (" + (counts[k] || 0) + ")");
@@ -145,7 +155,8 @@ function render() {
     chips.append(b);
   });
   const list = $("#list"); list.textContent = "";
-  const shown = orders.filter(o => filter === "all" || o.status === filter);
+  const qv = ($("#q").value || "").trim().toLowerCase();
+  const shown = orders.filter(o => (filter === "all" || o.status === filter) && (!qv || [o.name, o.phone, o.ref, o.wilaya].join(" ").toLowerCase().includes(qv)));
   if (!shown.length) { list.append(el("p", "empty", "لا توجد طلبيات هنا بعد.")); return; }
   shown.forEach(o => list.append(card(o)));
 }
@@ -166,7 +177,9 @@ function card(o) {
   c.append(el("p", "m", [o.wilaya, o.commune, o.address].filter(Boolean).join("، ")));
   c.append(el("p", "m", "التوصيل: " + (o.delivery || "")));
   if (o.notes) c.append(el("p", "m", "ملاحظات: " + o.notes));
-  c.append(el("div", "items", o.items || ""));
+  if (Array.isArray(o.lines) && o.lines.length) {
+    o.lines.forEach(l => { const r = el("div", "ln"); if (l.img) { const i = el("img"); i.src = l.img; i.onclick = () => { i.style.width = i.style.width ? "" : "160px"; i.style.height = i.style.height ? "" : "auto"; }; r.append(i); } else r.append(el("div", "ph", "✦")); const d = el("div"); d.append(el("div", "", l.n || ""), el("small", "", "المقاس: " + (l.s || "-") + "  ·  الكمية: " + (l.q || 1)), el("div", "", money((l.p || 0) * (l.q || 1)))); r.append(d); c.append(r); });
+  } else c.append(el("div", "items", o.items || ""));
   const t = el("p", "tot", "المجموع: " + Number(o.total || 0).toLocaleString("fr-FR") + " DZD");
   c.append(t);
   const sel = el("select");
@@ -177,15 +190,26 @@ function card(o) {
     catch (e) { console.error(e); $("#ae").textContent = "تعذّر تحديث الحالة (" + e.code + ")."; sel.value = o.status || "new"; }
   };
   c.append(sel);
+  const a = el("div", "acts");
+  a.append(act("نسخ الطلبية", "ghost", async () => { try { await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.items, "المجموع: " + money(o.total)].join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
+    act("حذف", "ghost danger", () => { if (confirm("حذف هذه الطلبية نهائياً؟")) deleteDoc(doc(db, "orders", o.id)); }));
+  c.append(a);
   return c;
 }
 
 /* ---------- Products ---------- */
 const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 3600 }];
+let BI = null;
+const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.json", { cache: "no-store" }); if (!r.ok) throw new Error("missing"); BI = await r.json(); } return BI; };
 const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
 const showTab = t => { $("#po").classList.toggle("hide", t !== "o"); $("#pp").classList.toggle("hide", t !== "p"); $("#tO").classList.toggle("on", t === "o"); $("#tP").classList.toggle("on", t === "p"); };
+$("#q").oninput = () => render();
 $("#tO").onclick = () => showTab("o"); $("#tP").onclick = () => showTab("p");
 const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 800 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .7)); }; im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); });
+const PAL = [["أسود", "#111111"], ["أبيض", "#F5F5F5"], ["رمادي", "#8A8A8A"], ["فضي", "#C9CCD2"], ["ذهبي", "#D4A937"], ["بيج", "#D9C3A5"], ["شامبانيا", "#E4C9B6"], ["بني", "#6B4226"], ["وردي", "#E8A0B4"], ["وردي فاتح", "#F3C6D0"], ["وردي ذهبي", "#E3A08A"], ["وردي قديم", "#B96A78"], ["أحمر", "#C0262D"], ["عنابي", "#6D1A36"], ["برتقالي", "#E07B2D"], ["أصفر", "#F0D24A"], ["أخضر", "#3F8F4F"], ["زيتي", "#6B6B2F"], ["أخضر زمردي", "#0E6B5C"], ["سماوي", "#4FB5D6"], ["أزرق", "#2B5DAA"], ["كحلي", "#16224A"], ["بنفسجي", "#6B3FA0"], ["موف", "#9B7BC1"]];
+const hex2rgb = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
+const colorName = x => { const a = hex2rgb(x); return PAL.map(([n, c]) => [n, hex2rgb(c).reduce((s, v, i) => s + (v - a[i]) ** 2, 0)]).sort((p, q) => p[1] - q[1])[0][0]; };
+const dominant = src => new Promise(ok => { const im = new Image(); im.onload = () => { const N = 40, c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d"); g.drawImage(im, 0, 0, N, N); const d = g.getImageData(0, 0, N, N).data, bk = {}; for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = (y * N + x) * 4, r = d[i], gg = d[i + 1], b = d[i + 2], mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 510, sat = mx ? (mx - mn) / mx : 0; if (l > .94) continue; const cw = 1 - Math.hypot(x - N / 2, y - N / 2) / N, k = (r >> 4) + "," + (gg >> 4) + "," + (b >> 4), e = bk[k] || (bk[k] = { w: 0, r: 0, g: 0, b: 0, n: 0 }), w = cw * (.35 + sat); e.w += w; e.r += r; e.g += gg; e.b += b; e.n++; } const t = Object.values(bk).sort((p, q) => q.w - p.w)[0]; ok(t ? "#" + [t.r, t.g, t.b].map(v => Math.round(v / t.n).toString(16).padStart(2, "0")).join("") : "#888888"); }; im.onerror = () => ok("#888888"); im.src = src; });
 const act = (label, cls, fn) => { const b = el("button", cls, label); b.onclick = fn; return b; };
 const save = async (id, data) => { try { await setDoc(doc(db, "products", id), data); form = null; renderP(); } catch (e) { console.error(e); $("#fe") && ($("#fe").textContent = "تعذّر الحفظ (" + e.code + ")."); } };
 
@@ -196,16 +220,27 @@ function renderP() {
   L.append(act("+ إضافة منتج جديد", "", () => { form = { id: "p" + Date.now().toString(36), n: ["", "", ""], d: ["", "", ""], p: "", o: "", z: "S,M,L,XL,XXL", colors: [{ n: "", c: "#C6A17E", imgs: [] }], hidden: false }; renderP(); }));
   L.append(el("p", "sub", "المنتجات المدمجة في الموقع (يمكن تعديل سعرها أو إخفاؤها)"));
   BUILTIN.forEach(b => {
-    const ov = prods[b.id] || {}, c = el("div", "card"), r = el("div", "p"), t = el("div");
-    r.append(el("div", "ph", "✦")); const h = el("h3", "", b.n); if (ov.hidden) h.append(el("span", "badge", "مخفي")); t.append(h, el("p", "m", money(ov.p || b.p) + ((ov.o || (!("o" in ov) && b.o)) ? "  (قبل: " + money(ov.o || b.o) + ")" : ""))); r.append(t); c.append(r);
+    const ov = prods[b.id] || {}, full = !!prods[b.id] && !ov.builtin, c = el("div", "card"), r = el("div", "p"), t = el("div");
+    const im0 = full && ov.colors && ov.colors[0] && ov.colors[0].imgs[0];
+    if (im0) { const i = el("img"); i.src = im0; r.append(i); } else r.append(el("div", "ph", "✦"));
+    const h = el("h3", "", full ? (ov.n[2] || ov.n[0] || b.n) : b.n); if (ov.hidden) h.append(el("span", "badge", "مخفي"));
+    t.append(h, el("p", "m", money(ov.p || b.p))); r.append(t); c.append(r);
     const a = el("div", "acts");
-    a.append(act("تعديل السعر", "ghost", () => { form = { builtin: true, id: b.id, name: b.n, p: ov.p || b.p, o: "o" in ov ? (ov.o || "") : (b.o || ""), hidden: !!ov.hidden }; renderP(); }),
-      act(ov.hidden ? "إظهار" : "إخفاء", "ghost", () => save(b.id, { builtin: true, p: ov.p || b.p, o: "o" in ov ? ov.o : (b.o || 0), hidden: !ov.hidden })));
-    if (prods[b.id]) a.append(act("استرجاع الأصل", "ghost danger", () => { if (confirm("استرجاع السعر والظهور الأصليين؟")) deleteDoc(doc(db, "products", b.id)); }));
+    a.append(act("تعديل كل شيء", "ghost", async () => {
+      if (full) { form = JSON.parse(JSON.stringify({ ...ov, id: b.id, z: (ov.z || []).join(","), o: ov.o || "" })); return renderP(); }
+      try {
+        const d = (await loadBI())[b.id];
+        form = { id: b.id, n: [...d.n], d: [...d.d], p: ov.p || d.p, o: "o" in ov ? (ov.o || "") : (d.o || ""), z: d.z.join(","), colors: JSON.parse(JSON.stringify(d.colors)), hidden: !!ov.hidden };
+        renderP();
+      } catch (e) { console.error(e); $("#ae").textContent = "ملف builtin-products.json غير موجود في المستودع. ارفعيه ثم أعيدي المحاولة."; }
+    }),
+      act(ov.hidden ? "إظهار" : "إخفاء", "ghost", () => save(b.id, full ? { ...ov, hidden: !ov.hidden } : { builtin: true, p: ov.p || b.p, o: "o" in ov ? ov.o : (b.o || 0), hidden: !ov.hidden })),
+      act("حذف", "ghost danger", () => { if (confirm("حذف هذا المنتج من المتجر؟ (يمكنك إظهاره لاحقاً)")) save(b.id, { builtin: true, p: ov.p || b.p, o: 0, hidden: true }); }));
+    if (prods[b.id]) a.append(act("استرجاع الأصل", "ghost danger", () => { if (confirm("استرجاع المنتج كما كان أصلاً؟")) deleteDoc(doc(db, "products", b.id)); }));
     c.append(a); L.append(c);
   });
   L.append(el("p", "sub", "المنتجات التي أضفتِها"));
-  const mine = Object.entries(prods).filter(([, x]) => !x.builtin);
+  const mine = Object.entries(prods).filter(([id, x]) => !x.builtin && !BUILTIN.some(b => b.id === id));
   if (!mine.length) L.append(el("p", "empty", "لم تضيفي منتجات بعد."));
   mine.forEach(([id, x]) => {
     const c = el("div", "card"), r = el("div", "p"), t = el("div"), im = x.colors && x.colors[0] && x.colors[0].imgs[0];
@@ -229,12 +264,13 @@ function renderForm() {
     inp("المقاسات (مفصولة بفاصلة)", "z");
     form.colors.forEach((c, k) => {
       const b = el("div", "cb"), nm = el("input"), cl = el("input"), fi = el("input"), th = el("div", "th");
-      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; };
+      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; c.nn = null; };
+      const au = act("تحديد اللون واسمه تلقائياً من الصورة الأولى", "ghost", async () => { if (!c.imgs.length) { $("#fe").textContent = "أضيفي صورة أولاً."; return; } c.c = await dominant(c.imgs[0]); c.n = colorName(c.c); c.nn = null; renderForm(); });
       cl.type = "color"; cl.value = c.c; cl.oninput = () => { c.c = cl.value; };
       fi.type = "file"; fi.accept = "image/*"; fi.multiple = true;
-      fi.onchange = async () => { for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } renderForm(); };
+      fi.onchange = async () => { const first = !c.imgs.length; for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } if (first && c.imgs.length) { c.c = await dominant(c.imgs[0]); if (!c.n.trim()) { c.n = colorName(c.c); c.nn = null; } } renderForm(); };
       c.imgs.forEach((src, j) => { const w = el("div"), i = el("img"), x = el("b", "", "×"); i.src = src; x.onclick = () => { c.imgs.splice(j, 1); renderForm(); }; w.append(i, x); th.append(w); });
-      b.append(el("label", "", "اللون " + (k + 1)), nm, cl, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
+      b.append(el("label", "", "اللون " + (k + 1) + " (يُحدَّد تلقائياً من أول صورة، ويمكنك تغييره)"), nm, cl, au, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
       if (form.colors.length > 1) b.append(act("حذف هذا اللون", "ghost danger", () => { form.colors.splice(k, 1); renderForm(); }));
       F.append(b);
     });
@@ -254,7 +290,7 @@ function saveForm() {
   const first = a => a.find(x => x.trim()) || "";
   if (!first(f.n)) return err("اكتبي اسم المنتج.");
   const n = f.n.map(x => x.trim() || first(f.n).trim()), d = f.d.map(x => x.trim() || first(f.d).trim());
-  const colors = f.colors.map(c => ({ n: c.n.trim() || "—", c: c.c, imgs: c.imgs })).filter(c => c.imgs.length);
+  const colors = f.colors.map(c => ({ n: c.n.trim() || "—", c: c.c, imgs: c.imgs, ...(c.nn ? { nn: c.nn } : {}) })).filter(c => c.imgs.length);
   if (!colors.length) return err("أضيفي صورة واحدة على الأقل.");
   const z = f.z.split(",").map(x => x.trim()).filter(Boolean);
   const data = { n, d, p, o, z, colors, hidden: !!f.hidden, createdAt: f.createdAt || Date.now() };
