@@ -777,7 +777,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const 
 $$('.stamps').forEach(e=>io.observe(e));
 const upd=()=>{const n=CART.reduce((s,l)=>s+l.q,0),c=$('#cn');c.textContent=n;c.hidden=!n;c.classList.remove('bp');void c.offsetWidth;c.classList.add('bp')};
 /* hero rotation */
-const HI=[{v:'or',price:PR.ab.p,name:PR.ab.n},{v:'po',price:PR.po.p,name:PR.po.n},{v:'ro',price:PR.ab.p,name:PR.ab.n},{v:'sb',price:PR.sa.p,name:PR.sa.n}];$('#hi').innerHTML=HI.map((x,i)=>`<img src="${IM[x.v][0]}" alt="${esc(x.name[li])}" data-hero="${i}">`).join('');let hk=0;const hs=$$('#hi img');function setHeroPrice(i){const x=HI[i];$('#heroPrice').textContent=fmt(x.price);$('#heroPiece').textContent=x.name[li]}hs[0].classList.add('on');setHeroPrice(0);setInterval(()=>{if(document.hidden)return;hs[hk].classList.remove('on');hk=(hk+1)%hs.length;hs[hk].classList.add('on');setHeroPrice(hk)},4200);
+const HI=[{v:'or',get price(){return PR.ab.p},get name(){return PR.ab.n}},{v:'po',get price(){return PR.po.p},get name(){return PR.po.n}},{v:'ro',get price(){return PR.ab.p},get name(){return PR.ab.n}},{v:'sb',get price(){return PR.sa.p},get name(){return PR.sa.n}}];$('#hi').innerHTML=HI.map((x,i)=>`<img src="${IM[x.v][0]}" alt="${esc(x.name[li])}" data-hero="${i}">`).join('');let hk=0;const hs=$$('#hi img');function setHeroPrice(i){const x=HI[i];$('#heroPrice').textContent=fmt(x.price);$('#heroPiece').textContent=x.name[li]}hs[0].classList.add('on');setHeroPrice(0);setInterval(()=>{if(document.hidden)return;hs[hk].classList.remove('on');hk=(hk+1)%hs.length;hs[hk].classList.add('on');setHeroPrice(hk)},4200);
 /* modal */
 function open(g,v){M={g,v:v||PR[g].v[0],s:'',q:1,i:0};mdl();$('#ov').classList.add('on');talk()}
 function mdl(){const p=PR[M.g],im=imgs(M.g,M.v);$('#md').innerHTML=`<button class="x" data-x="ov">×</button><div><div class="big" data-pos="1"><img id="bi" src="${im[M.i]||im[0]}" alt=""></div><div class="ths">${im.map((s,i)=>`<img data-th="${i}" class="${i==M.i?'on':''}" src="${s}" alt="">`).join('')}</div></div><div><h2 class="gt">${p.n[li]}</h2><p class="pr">${p.o?`<s>${fmt(p.o)}</s>`:''}${fmt(p.p)}<small>${cu()}</small></p><p>${p.d[li]}</p>${p.v.length>1?`<div class="sw">${p.v.map(x=>`<button class="dot" data-sw2="${x}" style="--cc:${VC[x]}" aria-pressed="${x==M.v}" aria-label="${VN[x][li]}"></button>`).join('')}<span style="margin-inline-start:6px">${VN[M.v][li]}</span></div>`:''}<p style="margin:6px 0 0">${t('size')}</p><div class="zs">${p.z.map(s=>`<button class="z" data-z="${s}" aria-pressed="${s==M.s}">${s}</button>`).join('')}</div><div class="q"><span>${t('qty')}</span><button class="z" data-q="-1">−</button><b>${M.q}</b><button class="z" data-q="1">+</button></div><button class="btn pk" data-add>${t('add')}</button><p class="hint" id="mh"></p></div>`}
@@ -884,7 +884,7 @@ async function submit(b){
   let result;
   try{result=await response.json()}catch(_){throw new Error('submission_failed')}
   if(!response.ok||!result||result.ok!==true)throw new Error('submission_failed');
-  try{await Promise.race([window.DIVA_SAVE_ORDER&&window.DIVA_SAVE_ORDER({ref,name:f.fn,phone,wilaya:f.wi,commune:f.co,address:f.ad,delivery:f.dm=='r'?'Stop Desk':'À domicile',notes:f.nt||'',items,subtotal:s.sub,discount:s.dis||0,shipping:s.sh||0,total:s.tot,account:payload.account}),new Promise(r=>setTimeout(r,4000))])}catch(_){}
+  try{await Promise.race([window.DIVA_SAVE_ORDER&&window.DIVA_SAVE_ORDER({ref,name:f.fn,phone,wilaya:f.wi,commune:f.co,address:f.ad,delivery:f.dm=='r'?'Stop Desk':'À domicile',notes:f.nt||'',items,subtotal:s.sub,discount:s.dis||0,shipping:s.sh||0,total:s.tot,account:payload.account,lines:CART.map(l=>({g:l.g,v:l.v,s:l.s,q:l.q,n:PR[l.g].n[li],p:PR[l.g].p}))}),new Promise(r=>setTimeout(r,4000))])}catch(_){}
  }catch(_){
   er.textContent=t('orderError');
   b.disabled=false;b.textContent=t('cf');
@@ -1116,6 +1116,8 @@ try { if (String(JSON.parse(localStorage.getItem("dmm_u") || '""')).startsWith("
 window.DIVA_SAVE_ORDER = async o => {
   try {
     const { getFirestore, doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const thumb = src => new Promise(r => { try { const im = new Image(); im.onload = () => { const k = 160 / Math.max(im.width, im.height), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .6)); }; im.onerror = () => r(""); im.src = src; } catch (_) { r(""); } });
+    if (Array.isArray(o.lines)) o.lines = await Promise.all(o.lines.slice(0, 12).map(async l => ({ ...l, img: await thumb(((IM[l.v] || [])[0]) || "") })));
     await setDoc(doc(getFirestore(window.__divaApp), "orders", o.ref), { ...o, status: "new", createdAt: serverTimestamp() });
     dbg("order saved: " + o.ref);
   } catch (error) {
@@ -1143,7 +1145,7 @@ window.DIVA_LOAD_PRODUCTS = async () => {
       x.colors.forEach((c, k) => {
         if (!c.imgs || !c.imgs.length) return;
         const key = id + "_" + k;
-        IM[key] = c.imgs; VN[key] = [c.n, c.n, c.n]; VD[key] = [c.n, c.n, c.n]; VC[key] = c.c || "#C6A17E"; vs.push(key);
+        IM[key] = c.imgs; const nn = Array.isArray(c.nn) && c.nn.length === 3 ? c.nn : [c.n, c.n, c.n]; VN[key] = nn; VD[key] = nn; VC[key] = c.c || "#C6A17E"; vs.push(key);
       });
       if (!vs.length) return;
       PR[id] = { p: +x.p, ...(x.o ? { o: +x.o } : {}), v: vs, z: x.z && x.z.length ? x.z : SZ, n: x.n, d: x.d || x.n, h: !!x.hidden };
