@@ -770,7 +770,7 @@ const imgs=(g,v)=>IM[v]||IM[PR[g].v[0]];
 const card=g=>{const p=PR[g],v=p.v[0];return `<article class="card rv${FAV.includes(g)?' faved':''}" data-g="${g}" data-v="${v}"><button class="hr${FAV.includes(g)?' on':''}" data-fav="${g}" aria-label="♥" aria-pressed="${FAV.includes(g)}">${hsv(FAV.includes(g))}</button><div class="ph" data-open="${g}"><img src="${IM[v][0]}" alt="${esc(nm(g,v))}" loading="lazy" decoding="async"><i class="sh"></i>${p.o?`<span class="rb">-${Math.round(100-p.p*100/p.o)}%</span>`:''}</div><h3>${p.n[li]}</h3><div class="sw">${p.v.length>1?p.v.map((x,i)=>`<button class="dot" data-sw="${x}" style="--cc:${VC[x]}" aria-pressed="${i==0}" aria-label="${VN[x][li]}"></button>`).join(''):''}</div><p class="pr">${p.o?`<s>${fmt(p.o)}</s>`:''}${fmt(p.p)}<small>${cu()}</small></p><button class="btn" data-open="${g}">${t('choose')}</button></article>`};
 function render(){document.documentElement.lang=L;document.documentElement.dir=L=='ar'?'rtl':'ltr';li=LS.indexOf(L);
 $$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));$$('.cu').forEach(e=>e.textContent=cu());$$('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l==L));if($('#heroPiece')&&typeof HI!=='undefined')setHeroPrice(hk);
-$('#gr').innerHTML=Object.keys(PR).map(card).join('');filterProducts();$('#f3d').textContent=[`Partout en Algérie, livraison offerte dès ${P(FREE)}.`,`Across Algeria, free delivery from ${P(FREE)}.`,`في كل الجزائر، توصيل مجاني ابتداءً من ${P(FREE)}.`][li];
+$('#gr').innerHTML=Object.keys(PR).filter(g=>!PR[g].h).map(card).join('');filterProducts();$('#f3d').textContent=[`Partout en Algérie, livraison offerte dès ${P(FREE)}.`,`Across Algeria, free delivery from ${P(FREE)}.`,`في كل الجزائر، توصيل مجاني ابتداءً من ${P(FREE)}.`][li];
 $('#qi').placeholder=t('qph');$('#qg').textContent=t('go');if($('#productSearch'))$('#productSearch').placeholder=t('search');$('#mq').innerHTML=Array(8).fill(t('slo')+' ✦').map(s=>`<span>${s}</span>`).join('');
 $$('.rv').forEach(e=>io.observe(e));stp();upd();paintFav();paintAcct();$('#fb').setAttribute('aria-label',t('fv'));if(M)mdl();if($('#dr').classList.contains('on'))drw()}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const el=e.target,sib=[...el.parentElement.children].filter(c=>c.classList.contains('rv')),i=Math.max(0,sib.indexOf(el));el.style.setProperty('--d',(Math.min(i,6)*.12)+'s');el.classList.add('in');io.unobserve(el);setTimeout(()=>el.style.removeProperty('--d'),2400)}}),{threshold:.12});
@@ -1123,5 +1123,38 @@ window.DIVA_SAVE_ORDER = async o => {
     dbg("order save error: " + (error.code || error.message));
   }
 };
+
+/* Products managed from admin.html (Firestore "products"): built-ins get overrides, new ones are added */
+window.DIVA_LOAD_PRODUCTS = async () => {
+  try {
+    const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const snap = await getDocs(collection(getFirestore(window.__divaApp), "products"));
+    let changed = false;
+    snap.forEach(d => {
+      const x = d.data(), id = d.id;
+      if (x.builtin) {
+        const b = PR[id]; if (!b) return;
+        if (x.p) b.p = +x.p;
+        if (x.o) b.o = +x.o; else if ("o" in x) delete b.o;
+        b.h = !!x.hidden; changed = true; return;
+      }
+      if (!x.p || !Array.isArray(x.n) || !Array.isArray(x.colors)) return;
+      const vs = [];
+      x.colors.forEach((c, k) => {
+        if (!c.imgs || !c.imgs.length) return;
+        const key = id + "_" + k;
+        IM[key] = c.imgs; VN[key] = [c.n, c.n, c.n]; VD[key] = [c.n, c.n, c.n]; VC[key] = c.c || "#C6A17E"; vs.push(key);
+      });
+      if (!vs.length) return;
+      PR[id] = { p: +x.p, ...(x.o ? { o: +x.o } : {}), v: vs, z: x.z && x.z.length ? x.z : SZ, n: x.n, d: x.d || x.n, h: !!x.hidden };
+      changed = true;
+    });
+    if (changed) {
+      for (let i = CART.length - 1; i >= 0; i--) if (!PR[CART[i].g]) CART.splice(i, 1);
+      render(); upd();
+    }
+  } catch (error) { console.error("Products load error:", error.code, error.message); dbg("products load error: " + (error.code || error.message)); }
+};
+window.DIVA_LOAD_PRODUCTS();
 </script>
 </body></html>
