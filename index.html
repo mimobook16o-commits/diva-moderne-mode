@@ -977,8 +977,21 @@ if(g){const p=PR[g];return[`<b>${p.n[li]}</b> — ${P(p.p)}<br>${p.d[li]}<br>${p
 if(h(/bonjour|bonsoir|salut|hello|\bhi\b|hey|سلام|مرحبا|اهلا|salam/))return[u?t('wc').replace('{n}',u.name):t('hi'),['ab','po']];
 if(h(/merci|thank|شكرا|barak/))return[R(`Avec grand plaisir, belle diva 🌷`,`My pleasure, beautiful 🌷`,`بكل سرور يا جميلة 🌷`),[]];
 return[R(`Je peux vous guider par occasion, couleur, budget ou wilaya, ajouter au panier, suivre votre carte du Cercle ✨ Essayez : « tenue pour un mariage », « moins de 9000 », « livraison à Oran ».`,`I can guide you by occasion, colour, budget or wilaya, add to cart, track your Circle card ✨ Try: “outfit for a wedding”, “under 9000”, “delivery to Oran”.`,`أستطيع إرشادك حسب المناسبة أو اللون أو الميزانية أو الولاية، وأضيف إلى السلة وأتابع بطاقتك ✨ جربي: «إطلالة لحفل زفاف» أو «اقل من 9000» أو «التوصيل إلى وهران».`),['ab','po','sa']]}
+/* Diva AI (Gemini through a private Cloudflare Worker). Paste the Worker address below; if empty or failing, the built-in answers are used. */
+window.DIVA_AI_URL='https://diva-ai.mimobook16o4.workers.dev';
+const AIH=[];
+const aiCatalog=()=>{const rt=Object.values(RT);return Object.keys(PR).filter(g=>!PR[g].h).map(g=>{const p=PR[g];return `- ${p.n[li]}: ${p.p} DZD${p.o?` (before ${p.o})`:''}; sizes ${p.z.join('/')}; colors ${p.v.map(v=>VN[v][li]).join(', ')}; ${p.d[li]}`}).join('\n')+`
+SHOP FACTS:
+- Delivery by ZR Express to all of Algeria (69 destinations), to home or to a Stop Desk office, in 2 to 5 days. Home delivery costs ${Math.min(...rt.map(r=>r[0]))} to ${Math.max(...rt.map(r=>r[0]))} DZD and Stop Desk ${Math.min(...rt.map(r=>r[1]))} to ${Math.max(...rt.map(r=>r[1]))} DZD depending on the wilaya. Delivery is free from ${FREE} DZD.
+- Promo code DIVA10 gives 10% off.
+- DIVA Circle loyalty: after 4 orders the 5th order is 50% off (customer signs in with the profile icon).
+- The customer can ask the assistant to add an item to the cart (for example "add the gold abaya in size M"); orders are confirmed at checkout in the shop.`};
+async function aiAsk(q){AIH.push({r:'u',t:q});const c=new AbortController(),to=setTimeout(()=>c.abort(),15000);try{const r=await fetch(window.DIVA_AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:AIH.slice(-8),lang:L,catalog:aiCatalog()}),signal:c.signal});const j=await r.json();if(!r.ok||!j.reply)throw new Error('ai');AIH.push({r:'b',t:j.reply});return j.reply}catch(e){AIH.pop();throw e}finally{clearTimeout(to)}}
 function ask(q){q=q.trim();if(!q)return;const u=document.createElement('div');u.className='m u';u.textContent=q;MS.append(u);const d=document.createElement('div');d.className='m b dots';d.innerHTML='<i></i><i></i><i></i>';MS.append(d);MS.scrollTop=MS.scrollHeight;$('#qi').value='';
-setTimeout(()=>{d.remove();const[a,g]=reply(q);bot(a);chips(g.length?g:['ab','tr','po','sa'])},700)}
+const local=()=>{d.remove();const[a,g]=reply(q);bot(a);chips(g.length?g:['ab','tr','po','sa'])};
+const act=CX.pend||/ajout|rajout|mets|mettez|add |اضف|ضيف|اطلب|commander|panier|cart|سله|سلت|ma commande/.test(nz(q));
+if(!window.DIVA_AI_URL||act){setTimeout(local,700);return}
+aiAsk(q).then(a=>{d.remove();bot(esc(a).replace(/\n/g,'<br>'));const[,g]=reply(q);chips(g&&g.length?g:['ab','tr','po','sa'])}).catch(()=>setTimeout(local,200))}
 $('#cf').addEventListener('submit',e=>{e.preventDefault();ask($('#qi').value)});
 fy.addEventListener('keydown',e=>{if(e.key=='Enter')chat(1)});
 /* petals + splash */
