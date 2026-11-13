@@ -46,7 +46,7 @@ a{color:var(--gold)}
 .m{color:var(--mut);font-size:15px;margin:2px 0}
 .hide{display:none}
 .empty{color:var(--mut);text-align:center;padding:40px 0}
-.tabs{display:flex;gap:8px;margin:4px 0 14px}.tabs .chip{flex:1;text-align:center}
+.tabs{display:flex;gap:8px;margin:4px 0 14px;overflow-x:auto;padding:3px 0 10px;scrollbar-width:thin}.tabs .chip{flex:none;text-align:center;white-space:nowrap}
 .p{display:flex;gap:12px;align-items:center}.p img{width:64px;height:80px;object-fit:cover;border-radius:14px;border:1px solid var(--line);flex:none}
 .p .ph{width:64px;height:80px;border-radius:14px;border:1px solid var(--line);flex:none;display:grid;place-items:center;color:var(--gold);font-size:22px}
 .p h3{margin:0;font:500 17px Tajawal,sans-serif}.badge{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:99px;padding:0 10px;color:var(--mut);margin-inline-start:6px}
@@ -64,6 +64,15 @@ a{color:var(--gold)}
 .ln img{width:58px;height:72px;object-fit:cover;border-radius:12px;flex:none}.ln .ph{width:58px;height:72px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);flex:none}
 .ln div{font-size:14px;line-height:1.4}.ln small{color:var(--mut)}
 .sw{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);vertical-align:middle;margin-inline-end:6px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field-grid>div{min-width:0}.field-grid label{margin-top:8px}
+.panel-title{font:500 21px Tajawal,sans-serif;color:var(--champ);margin:0 0 8px}.hint{font-size:13px;color:var(--mut);margin:6px 0 12px}.metric{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.notice{border:1px solid rgba(207,117,149,.4);background:rgba(182,84,121,.12);border-radius:16px;padding:12px;margin:12px 0;color:var(--ivory);font-size:14px}
+.good{color:var(--ok)}.pill{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:12px;color:var(--mut)}
+.bartrack{height:9px;border-radius:99px;background:rgba(242,230,227,.1);overflow:hidden;margin-top:5px}.barfill{height:100%;border-radius:99px;background:var(--gd)}
+.inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.inline-actions button{width:auto;flex:1;min-width:120px}.form-actions{display:flex;gap:8px;margin-top:14px}.form-actions button{flex:1}
+input[type=checkbox]{width:auto;accent-color:var(--gold);margin-inline-end:8px}input[type=color]{height:48px;padding:5px}
+@media(max-width:520px){.field-grid{grid-template-columns:1fr}.box{padding:17px}.tabs .chip{font-size:14px;padding:.4em .9em}.brand{margin-top:15px}}
+
 </style>
 </head>
 <body>
@@ -73,7 +82,7 @@ a{color:var(--gold)}
     <h1>لوحة التحكم</h1>
     <p class="sub">دخول خاص بصاحبة المتجر</p>
     <label for="em">البريد الإلكتروني</label>
-    <input id="em" type="email" autocomplete="username" inputmode="email" dir="ltr">
+    <input id="em" type="email" autocomplete="username" inputmode="email" dir="ltr" value="diva.moderne.mode@gmail.com">
     <label for="pw">كلمة المرور</label>
     <input id="pw" type="password" autocomplete="current-password" dir="ltr">
     <p style="margin:16px 0 0"><button id="go">دخول</button></p>
@@ -82,10 +91,25 @@ a{color:var(--gold)}
 
   <section id="app" class="hide">
     <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
-    <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button></div>
+    <div class="tabs" id="mainTabs">
+      <button class="chip on" data-tab="o">الطلبيات</button>
+      <button class="chip" data-tab="p">المنتجات</button>
+      <button class="chip" data-tab="promo">العروض والتخفيضات</button>
+      <button class="chip" data-tab="stock">المخزون</button>
+      <button class="chip" data-tab="customers">العملاء</button>
+      <button class="chip" data-tab="analytics">التحليلات</button>
+      <button class="chip" data-tab="settings">إعدادات المتجر</button>
+      <button class="chip" data-tab="backup">النسخ الاحتياطي والأمان</button>
+    </div>
     <p class="err" id="ae"></p>
     <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
     <div id="pp" class="hide"><div id="plist"></div><div id="pform" class="box fm hide"></div></div>
+    <section id="promoView" class="hide"><div id="promoList"></div><div id="promoForm" class="box fm hide"></div></section>
+    <section id="stockView" class="hide"><div class="stats" id="stockStats"></div><p class="sub">حدّثي الكمية المتاحة لكل منتج. هذا يسجل الكمية في Firebase، ويحتاج ربط صفحة المتجر به لمنع طلب منتج نفد مخزونه.</p><div id="stockList"></div></section>
+    <section id="customerView" class="hide"><div class="stats" id="customerStats"></div><input id="customerSearch" placeholder="بحث باسم العميل أو الهاتف" style="margin-bottom:10px"><div id="customerList"></div></section>
+    <section id="analyticsView" class="hide"><div class="stats" id="analyticsStats"></div><div class="box"><h2 class="panel-title">المبيعات خلال آخر 6 أشهر</h2><div id="salesBars"></div></div><div class="box" style="margin-top:12px"><h2 class="panel-title">حالات الطلبيات</h2><div id="statusBars"></div></div></section>
+    <section id="settingsView" class="hide"><div id="settingsForm" class="box fm"></div></section>
+    <section id="backupView" class="hide"><div class="box"><h2 class="panel-title">النسخ الاحتياطي</h2><p class="sub">تنزيل نسخة JSON من البيانات التي حمّلتها هذه اللوحة: المنتجات والطلبيات والعروض والإعدادات.</p><button id="exportBackup">تنزيل نسخة احتياطية</button><p class="err" id="backupMsg"></p><div class="notice">هذه نسخة تنزيل من البيانات المتاحة حاليًا في اللوحة، وليست نسخة كاملة من مشروع Firebase أو صور Storage أو إعدادات Authentication.</div></div><div class="box" style="margin-top:12px"><h2 class="panel-title">الأمان والصلاحيات</h2><p class="sub">تسجيل الدخول وحده لا يكفي لحماية لوحة الإدارة. يجب أن تقيّد قواعد Firestore القراءة والكتابة بحساب الإدارة المصرّح له، لا أن تعتمد على إخفاء الصفحة.</p><div class="notice">لم أغيّر قواعد Firestore لأن ملف القواعد غير مرفق. لا تنشري قواعد تسمح للجميع بالقراءة أو الكتابة. كما يجب أن يتم حساب السعر النهائي والتحقق من الكوبونات والمخزون من جهة موثوقة عند تأكيد الطلب.</div><p class="m">مطلوب لإكمال الحماية: ملف firestore.rules أو قواعد قاعدة البيانات الحالية، ومعرفة UID لحساب الإدارة أو إعداد Custom Claims.</p></div></section>
   </section>
 </main>
 
@@ -106,7 +130,7 @@ const db = getFirestore(app);
 const $ = s => document.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const STATUS = { new: "جديد", confirmed: "مؤكَّد", shipped: "قيد الشحن", delivered: "تم التسليم", cancelled: "ملغى" };
-let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null;
+let orders = [], filter = "all", unsub = null, unsubP = null, unsubPromo = null, unsubSettings = null, prods = {}, promotions = [], storeSettings = {}, form = null, promoForm = null;
 
 const loginMsg = code => ({
   "auth/invalid-credential": "البريد أو كلمة المرور غير صحيحة.",
@@ -129,8 +153,12 @@ onAuthStateChanged(auth, user => {
   $("#app").classList.toggle("hide", !user);
   if (unsub) { unsub(); unsub = null; }
   if (unsubP) { unsubP(); unsubP = null; }
-  if (!user) { orders = []; $("#pw").value = ""; return; }
-  unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); renderP(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من لصق القواعد الجديدة."; });
+  if (unsubPromo) { unsubPromo(); unsubPromo = null; }
+  if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+  if (!user) { orders = []; promotions = []; storeSettings = {}; $("#pw").value = ""; return; }
+  unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); renderP(); renderStock(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من قواعد Firestore."; });
+  unsubPromo = onSnapshot(collection(db, "promotions"), snap => { promotions = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderPromos(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل العروض (" + err.code + "). قد تحتاج قواعد Firestore إلى السماح للإدارة."; });
+  unsubSettings = onSnapshot(doc(db, "storeSettings", "main"), snap => { storeSettings = snap.exists() ? snap.data() : {}; renderSettings(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل إعدادات المتجر (" + err.code + ")."; });
   unsub = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")),
     snap => { $("#ae").textContent = ""; orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
     err => {
@@ -202,16 +230,24 @@ const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", 
 let BI = null;
 const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.json", { cache: "no-store" }); if (!r.ok) throw new Error("missing"); BI = await r.json(); } return BI; };
 const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
-const showTab = t => { $("#po").classList.toggle("hide", t !== "o"); $("#pp").classList.toggle("hide", t !== "p"); $("#tO").classList.toggle("on", t === "o"); $("#tP").classList.toggle("on", t === "p"); };
+const TAB_VIEWS = { o: "po", p: "pp", promo: "promoView", stock: "stockView", customers: "customerView", analytics: "analyticsView", settings: "settingsView", backup: "backupView" };
+const showTab = t => {
+  Object.entries(TAB_VIEWS).forEach(([key, id]) => $("#" + id).classList.toggle("hide", key !== t));
+  document.querySelectorAll("#mainTabs [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  if (t === "customers") renderCustomers();
+  if (t === "analytics") renderAnalytics();
+  if (t === "stock") renderStock();
+  if (t === "settings") renderSettings();
+};
 $("#q").oninput = () => render();
-$("#tO").onclick = () => showTab("o"); $("#tP").onclick = () => showTab("p");
+document.querySelectorAll("#mainTabs [data-tab]").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 800 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .7)); }; im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); });
 const PAL = [["أسود", "#111111"], ["أبيض", "#F5F5F5"], ["رمادي", "#8A8A8A"], ["فضي", "#C9CCD2"], ["ذهبي", "#D4A937"], ["بيج", "#D9C3A5"], ["شامبانيا", "#E4C9B6"], ["بني", "#6B4226"], ["وردي", "#E8A0B4"], ["وردي فاتح", "#F3C6D0"], ["وردي ذهبي", "#E3A08A"], ["وردي قديم", "#B96A78"], ["أحمر", "#C0262D"], ["عنابي", "#6D1A36"], ["برتقالي", "#E07B2D"], ["أصفر", "#F0D24A"], ["أخضر", "#3F8F4F"], ["زيتي", "#6B6B2F"], ["أخضر زمردي", "#0E6B5C"], ["سماوي", "#4FB5D6"], ["أزرق", "#2B5DAA"], ["كحلي", "#16224A"], ["بنفسجي", "#6B3FA0"], ["موف", "#9B7BC1"]];
 const hex2rgb = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
 const colorName = x => { const a = hex2rgb(x); return PAL.map(([n, c]) => [n, hex2rgb(c).reduce((s, v, i) => s + (v - a[i]) ** 2, 0)]).sort((p, q) => p[1] - q[1])[0][0]; };
 const dominant = src => new Promise(ok => { const im = new Image(); im.onload = () => { const N = 40, c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d"); g.drawImage(im, 0, 0, N, N); const d = g.getImageData(0, 0, N, N).data, bk = {}; for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = (y * N + x) * 4, r = d[i], gg = d[i + 1], b = d[i + 2], mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 510, sat = mx ? (mx - mn) / mx : 0; if (l > .94) continue; const cw = 1 - Math.hypot(x - N / 2, y - N / 2) / N, k = (r >> 4) + "," + (gg >> 4) + "," + (b >> 4), e = bk[k] || (bk[k] = { w: 0, r: 0, g: 0, b: 0, n: 0 }), w = cw * (.35 + sat); e.w += w; e.r += r; e.g += gg; e.b += b; e.n++; } const t = Object.values(bk).sort((p, q) => q.w - p.w)[0]; ok(t ? "#" + [t.r, t.g, t.b].map(v => Math.round(v / t.n).toString(16).padStart(2, "0")).join("") : "#888888"); }; im.onerror = () => ok("#888888"); im.src = src; });
 const act = (label, cls, fn) => { const b = el("button", cls, label); b.onclick = fn; return b; };
-const save = async (id, data) => { try { await setDoc(doc(db, "products", id), data); form = null; renderP(); } catch (e) { console.error(e); $("#fe") && ($("#fe").textContent = "تعذّر الحفظ (" + e.code + ")."); } };
+const save = async (id, data) => { try { await setDoc(doc(db, "products", id), data, { merge: true }); form = null; renderP(); renderStock(); } catch (e) { console.error(e); $("#fe") && ($("#fe").textContent = "تعذّر الحفظ (" + e.code + ")."); } };
 
 function renderP() {
   $("#pform").classList.toggle("hide", !form); $("#plist").classList.toggle("hide", !!form);
@@ -297,6 +333,112 @@ function saveForm() {
   if (JSON.stringify(data).length > 950000) return err("الصور كبيرة جداً. قلّلي عدد الصور (الحد حوالي 8 صور للمنتج).");
   $("#fe").textContent = "جارٍ الحفظ…"; save(f.id, data);
 }
+
+
+/* ---------- Promotions ---------- */
+const promoTypes = { percent: "خصم بنسبة مئوية", fixed: "خصم بمبلغ ثابت", buy_x_get_y: "اشتري كمية واحصلي على كمية مخفّضة", quantity_tier: "خصم عند بلوغ كمية", free_shipping: "توصيل مجاني" };
+const promoName = p => promoTypes[p.type] || p.type || "عرض";
+function renderPromos() {
+  const L = $("#promoList"); if (!L) return; L.textContent = "";
+  L.append(act("+ إنشاء عرض جديد", "", () => { promoForm = { id: "pr" + Date.now().toString(36), name: "", code: "", type: "percent", amount: 10, minQty: 2, buyQty: 2, getQty: 1, getDiscount: 100, discountUnit: "percent", productIds: "", startAt: "", endAt: "", priority: 1, maxUses: 0, active: true, stackable: false }; renderPromos(); }));
+  L.append(el("p", "hint", "العرض يُحفظ في مجموعة promotions. يلزم ربط صفحة المتجر به حتى يظهر للزبائن ويُطبّق على السلة."));
+  if (promoForm) { L.append(renderPromoForm()); return; }
+  if (!promotions.length) { L.append(el("p", "empty", "لا توجد عروض محفوظة حتى الآن.")); return; }
+  [...promotions].sort((a,b) => Number(b.priority || 0) - Number(a.priority || 0)).forEach(p => {
+    const c = el("div", "card"), top = el("div", "row"), title = el("div", "name", p.name || "عرض بدون اسم");
+    top.append(title, el("span", "pill", p.active ? "مفعّل" : "متوقف")); c.append(top, el("p", "m", promoName(p)));
+    if (p.code) c.append(el("p", "m", "كود الخصم: " + p.code));
+    const value = p.type === "percent" ? (p.amount || 0) + "%" : p.type === "fixed" ? money(p.amount) : p.type === "buy_x_get_y" ? `اشتري ${p.buyQty} واحصلي على ${p.getQty} بخصم ${p.getDiscount}%` : p.type === "quantity_tier" ? `ابتداءً من ${p.minQty} قطع: خصم ${p.amount}${p.discountUnit === "percent" ? "%" : " دج"}` : "توصيل مجاني";
+    c.append(el("p", "tot", value));
+    c.append(el("p", "m", `الأولوية: ${p.priority || 0} · المنتجات المستهدفة: ${p.productIds || "كل المنتجات"}`));
+    if (p.startAt || p.endAt) c.append(el("p", "hint", `الفترة: ${p.startAt || "بلا بداية"} — ${p.endAt || "بلا نهاية"}`));
+    const a = el("div", "acts"); a.append(act("تعديل", "ghost", () => { promoForm = JSON.parse(JSON.stringify(p)); renderPromos(); }), act(p.active ? "إيقاف" : "تفعيل", "ghost", async () => { try { await updateDoc(doc(db,"promotions",p.id), { active: !p.active, updatedAt: Date.now() }); } catch(e) { showErr("تعذّر تغيير حالة العرض",e); } }), act("حذف", "ghost danger", async () => { if (confirm("حذف هذا العرض؟")) { try { await deleteDoc(doc(db,"promotions",p.id)); } catch(e) { showErr("تعذّر حذف العرض",e); } } })); c.append(a); L.append(c);
+  });
+}
+function renderPromoForm() {
+  const p = promoForm, F = el("div", "box fm");
+  p.discountUnit = p.discountUnit || "percent";
+  p.productIds = Array.isArray(p.productIds) ? p.productIds.join(", ") : (p.productIds || "");
+  F.append(el("h2", "panel-title", "بيانات العرض"));
+  const field = (label,key,type="text",placeholder="") => { const wrap=el("div"), l=el("label","",label), i=el("input"); i.type=type; i.value=p[key] ?? ""; if(placeholder)i.placeholder=placeholder; i.oninput=()=>p[key]=type==="number"?Number(i.value):i.value; wrap.append(l,i); return wrap; };
+  const sel = (label,key,opts) => { const wrap=el("div"), l=el("label","",label), s=el("select"); opts.forEach(([v,n])=>{const o=el("option","",n);o.value=v;s.append(o)});s.value=p[key]||opts[0][0];s.onchange=()=>{p[key]=s.value;renderPromos()};wrap.append(l,s);return wrap; };
+  const grid=el("div","field-grid"); grid.append(field("اسم العرض","name"),field("كود الخصم (اختياري)","code"),sel("نوع العرض","type",Object.entries(promoTypes)),field("قيمة الخصم","amount","number"));
+  if(p.type==="buy_x_get_y") grid.append(field("عدد القطع المطلوبة للشراء","buyQty","number"),field("عدد القطع المخفّضة/المجانية","getQty","number"),field("نسبة الخصم على القطعة الإضافية","getDiscount","number"));
+  if(p.type==="quantity_tier") grid.append(field("الحد الأدنى للكمية","minQty","number"),sel("وحدة الخصم","discountUnit",[["percent","نسبة مئوية"],["fixed","مبلغ ثابت"]]));
+  grid.append(field("معرّفات المنتجات (بفواصل، فارغ = الكل)","productIds"),field("الأولوية (الأكبر أولاً)","priority","number"),field("الحد الأقصى للاستخدام (0 = بلا حد)","maxUses","number"),field("بداية العرض","startAt","datetime-local"),field("نهاية العرض","endAt","datetime-local"));
+  F.append(grid);
+  const checks=el("div","cb"), active=el("label"), ai=el("input"), stack=el("label"), si=el("input"); ai.type=si.type="checkbox";ai.checked=!!p.active;si.checked=!!p.stackable;ai.onchange=()=>p.active=ai.checked;si.onchange=()=>p.stackable=si.checked;active.append(ai,document.createTextNode(" العرض مفعّل"));stack.append(si,document.createTextNode(" السماح بدمج العرض مع عروض أخرى (يتطلب منطق تعارض في المتجر)"));checks.append(active,stack);F.append(checks);
+  F.append(el("p","hint","في عرض اشترِ X واحصلي على Y، استخدمي خصم 100% للقطعة المجانية أو نسبة أقل للتخفيض الجزئي."));
+  const error=el("p","err");error.id="promoErr";F.append(error);
+  const buttons=el("div","form-actions");buttons.append(act("حفظ العرض","",savePromo),act("إلغاء","ghost",()=>{promoForm=null;renderPromos()}));F.append(buttons);return F;
+}
+async function savePromo(){
+  const p=promoForm,err=$("#promoErr"); if(!p.name?.trim())return err.textContent="اكتبي اسم العرض.";
+  if(["percent","fixed","quantity_tier"].includes(p.type)&&!(Number(p.amount)>0))return err.textContent="أدخلي قيمة خصم أكبر من صفر.";
+  if(p.type==="percent"&&(p.amount>100))return err.textContent="النسبة لا يمكن أن تتجاوز 100%.";
+  if(p.type==="buy_x_get_y"&&(!(p.buyQty>0)||!(p.getQty>0)||p.getDiscount<0||p.getDiscount>100))return err.textContent="تحققي من كميات ونسبة العرض.";
+  if(p.type==="quantity_tier"&&!(p.minQty>0))return err.textContent="أدخلي أقل كمية لتفعيل العرض.";
+  if(p.startAt&&p.endAt&&new Date(p.endAt)<=new Date(p.startAt))return err.textContent="تاريخ نهاية العرض يجب أن يكون بعد البداية.";
+  const data={...p,name:p.name.trim(),code:(p.code||"").trim().toUpperCase(),productIds:(p.productIds||"").split(",").map(x=>x.trim()).filter(Boolean),amount:Number(p.amount||0),priority:Number(p.priority||0),maxUses:Number(p.maxUses||0),updatedAt:Date.now(),createdAt:p.createdAt||Date.now()};
+  try{await setDoc(doc(db,"promotions",p.id),data,{merge:true});promoForm=null;renderPromos();}catch(e){err.textContent="تعذّر حفظ العرض ("+e.code+"). راجعي قواعد Firestore.";}
+}
+
+/* ---------- Customers: derived from existing orders ---------- */
+function customerRows(){
+  const map=new Map();
+  orders.forEach(o=>{const key=String(o.phone||o.name||o.id);if(!map.has(key))map.set(key,{name:o.name||"عميل",phone:o.phone||"",wilaya:o.wilaya||"",commune:o.commune||"",address:o.address||"",orders:[],spent:0,last:null});const x=map.get(key);x.orders.push(o);if(o.status!=="cancelled")x.spent+=Number(o.total||0);const d=orderDate(o);if(d&&(!x.last||d>x.last))x.last=d;});
+  return [...map.values()].sort((a,b)=>(b.last?.getTime?.()||0)-(a.last?.getTime?.()||0));
+}
+function orderDate(o){if(o.createdAt?.toDate)return o.createdAt.toDate();if(o.createdAt instanceof Date)return o.createdAt;if(typeof o.createdAt==="number")return new Date(o.createdAt);return null;}
+function renderCustomers(){
+  const rows=customerRows(),qv=($("#customerSearch")?.value||"").trim().toLowerCase(),filtered=rows.filter(x=>[x.name,x.phone,x.wilaya].join(" ").toLowerCase().includes(qv));
+  const spent=rows.reduce((a,x)=>a+x.spent,0), repeat=rows.filter(x=>x.orders.length>1).length;
+  $("#customerStats").textContent="";[[rows.length,"عدد العملاء"],[repeat,"عملاء متكررون"],[money(spent),"مجموع مشتريات غير الملغاة"],[rows.reduce((a,x)=>a+x.orders.length,0),"إجمالي الطلبيات"]].forEach(([v,l])=>{const b=el("div","sb");b.append(el("b","",String(v)),el("span","",l));$("#customerStats").append(b)});
+  const L=$("#customerList");L.textContent="";if(!filtered.length){L.append(el("p","empty","لا توجد نتائج للعملاء."));return;}
+  filtered.forEach(x=>{const c=el("div","card");c.append(el("div","name",x.name),el("p","m",x.phone),el("p","m",[x.wilaya,x.commune,x.address].filter(Boolean).join("، ")),el("p","tot",money(x.spent)),el("p","hint",`${x.orders.length} طلبية · آخر طلب: ${x.last?x.last.toLocaleDateString("fr-FR"):"غير متوفر"}`));const a=el("div","acts");if(x.phone){const wa=act("مراسلة WhatsApp","ghost",()=>{const digits=x.phone.replace(/\D/g,"").replace(/^0/,"213");window.open("https://wa.me/"+digits,"_blank","noopener")});a.append(wa)}a.append(act("عرض الطلبيات","ghost",()=>{showTab("o");$("#q").value=x.phone||x.name;render()}));c.append(a);L.append(c)});
+}
+$("#customerSearch").oninput=renderCustomers;
+
+/* ---------- Stock ---------- */
+function allProductRows(){
+  const rows=[];BUILTIN.forEach(b=>{const x=prods[b.id]||{};rows.push({id:b.id,name:x.n?.[2]||x.n?.[0]||b.n,price:Number(x.p||b.p),stock:x.stock,threshold:Number(x.lowStockThreshold??3),hidden:!!x.hidden,builtin:true,data:x})});
+  Object.entries(prods).filter(([id,x])=>!x.builtin&&!BUILTIN.some(b=>b.id===id)).forEach(([id,x])=>rows.push({id,name:x.n?.[2]||x.n?.[0]||id,price:Number(x.p||0),stock:x.stock,threshold:Number(x.lowStockThreshold??3),hidden:!!x.hidden,builtin:false,data:x}));
+  return rows;
+}
+function renderStock(){
+ const rows=allProductRows(),known=rows.filter(x=>Number.isFinite(Number(x.stock))&&x.stock!==undefined),low=known.filter(x=>Number(x.stock)<=x.threshold);
+ $("#stockStats").textContent="";[[rows.length,"كل المنتجات"],[known.length,"لها كمية مسجلة"],[low.length,"مخزون منخفض"]].forEach(([v,l])=>{const b=el("div","sb");b.append(el("b","",String(v)),el("span","",l));$("#stockStats").append(b)});
+ const L=$("#stockList");L.textContent="";rows.forEach(x=>{const c=el("div","card"),r=el("div","row");r.append(el("div","name",x.name),el("span","pill",x.hidden?"مخفي":"ظاهر"));c.append(r,el("p","m",x.stock===undefined?"الكمية غير محددة":"المتوفر: "+x.stock+" قطعة"));if(x.stock!==undefined&&Number(x.stock)<=x.threshold)c.append(el("p","m danger","تنبيه: وصل المخزون إلى الحد المنخفض"));const grid=el("div","field-grid"),w1=el("div"),w2=el("div"),l1=el("label","","الكمية المتاحة"),l2=el("label","","تنبيه عند كمية أقل من"),i=el("input"),t=el("input");i.type=t.type="number";i.min=t.min="0";i.value=x.stock??"";t.value=x.threshold;i.placeholder="غير محددة";w1.append(l1,i);w2.append(l2,t);grid.append(w1,w2);c.append(grid);c.append(act("حفظ الكمية","ghost",async()=>{const n=Number(i.value),th=Number(t.value);if(i.value===""||n<0||!Number.isFinite(n)||th<0){alert("أدخلي كمية وحد تنبيه صحيحين.");return;}try{await setDoc(doc(db,"products",x.id),{...(x.builtin?{builtin:true}:{}),stock:n,lowStockThreshold:th,stockUpdatedAt:Date.now()},{merge:true});}catch(e){showErr("تعذّر حفظ المخزون",e)}}));L.append(c)});
+}
+
+/* ---------- Store settings and appearance ---------- */
+const DEFAULT_SETTINGS={storeName:"Diva Moderne Mode",announcement:"",whatsapp:"",deliveryPrice:0,freeDeliveryMin:0,primaryColor:"#21142B",accentColor:"#C6A17E",backgroundColor:"#21142B",textColor:"#F2E6E3"};
+function renderSettings(){
+ const F=$("#settingsForm");if(!F)return;F.textContent="";const s={...DEFAULT_SETTINGS,...storeSettings};F.append(el("h2","panel-title","إعدادات المتجر والهوية البصرية"),el("p","hint","تُحفظ في storeSettings/main. يلزم ربط واجهة المتجر بهذا المستند حتى تنعكس الإعدادات لدى الزبائن."));
+ const grid=el("div","field-grid");const fields=[["اسم المتجر","storeName","text"],["رقم WhatsApp","whatsapp","tel"],["شريط الإعلان أعلى الموقع","announcement","text"],["سعر التوصيل (دج)","deliveryPrice","number"],["حد التوصيل المجاني (دج، 0 لتعطيله)","freeDeliveryMin","number"]];
+ fields.forEach(([label,key,type])=>{const w=el("div"),l=el("label","",label),i=el("input");i.type=type;i.value=s[key]??"";i.oninput=()=>s[key]=type==="number"?Number(i.value):i.value;w.append(l,i);grid.append(w)});
+ F.append(grid,el("h2","panel-title","ألوان الهوية"));const colors=el("div","field-grid");[["اللون الأساسي","primaryColor"],["اللون الذهبي/المميّز","accentColor"],["خلفية الموقع","backgroundColor"],["لون النص","textColor"]].forEach(([label,key])=>{const w=el("div"),l=el("label","",label),i=el("input");i.type="color";i.value=s[key];i.oninput=()=>s[key]=i.value;w.append(l,i);colors.append(w)});F.append(colors);
+ const preview=el("div","card"),previewTitle=el("div","name","معاينة الألوان"),previewText=el("p","m","Diva Moderne Mode · Collection élégante");preview.append(previewTitle,previewText);F.append(preview);colors.querySelectorAll('input[type="color"]').forEach(i=>i.addEventListener("input",()=>{preview.style.background=s.backgroundColor;preview.style.color=s.textColor;preview.style.borderColor=s.accentColor;previewTitle.style.color=s.accentColor}));
+ const note=el("p","notice","ملاحظة: هذه لوحة إعدادات تحفظ القيم فقط. تغيير ألوان صفحة المتجر أو أسعار التوصيل فعليًا يحتاج إضافة قارئ لهذه الإعدادات في ملفات الموقع الرئيسية.");F.append(note);
+ const err=el("p","err");err.id="settingsErr";F.append(err);F.append(act("حفظ إعدادات المتجر","",async()=>{try{await setDoc(doc(db,"storeSettings","main"),{...s,updatedAt:Date.now()},{merge:true});err.textContent="تم حفظ الإعدادات في Firebase.";err.className="err good"}catch(e){err.textContent="تعذّر الحفظ ("+e.code+"). راجعي قواعد Firestore."}}));
+}
+
+/* ---------- Analytics ---------- */
+function renderAnalytics(){
+ const live=orders.filter(o=>o.status!=="cancelled"),sales=live.reduce((a,o)=>a+Number(o.total||0),0),avg=live.length?sales/live.length:0,delivered=orders.filter(o=>o.status==="delivered").length;
+ $("#analyticsStats").textContent="";[[money(sales),"المبيعات المحتسبة"],[live.length,"طلبيات غير ملغاة"],[money(avg),"متوسط الطلبية"],[delivered,"طلبات مسلّمة"]].forEach(([v,l])=>{const b=el("div","sb");b.append(el("b","",String(v)),el("span","",l));$("#analyticsStats").append(b)});
+ const months=[];const now=new Date();for(let k=5;k>=0;k--){const d=new Date(now.getFullYear(),now.getMonth()-k,1);months.push({label:d.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}),key:d.getFullYear()+"-"+d.getMonth(),value:0,count:0})}
+ live.forEach(o=>{const d=orderDate(o);if(!d)return;const x=months.find(m=>m.key===d.getFullYear()+"-"+d.getMonth());if(x){x.value+=Number(o.total||0);x.count++}});
+ const max=Math.max(1,...months.map(x=>x.value)),bars=$("#salesBars");bars.textContent="";months.forEach(m=>{const w=el("div");w.style.margin="12px 0";const row=el("div","row");row.append(el("span","m",m.label+" · "+m.count+" طلب"),el("b","",money(m.value)));const track=el("div","bartrack"),fill=el("div","barfill");fill.style.width=(m.value/max*100)+"%";track.append(fill);w.append(row,track);bars.append(w)});
+ const sb=$("#statusBars");sb.textContent="";const total=Math.max(1,orders.length);Object.entries(STATUS).forEach(([key,label])=>{const count=orders.filter(o=>o.status===key).length,w=el("div");w.style.margin="10px 0";const row=el("div","row");row.append(el("span","m",label),el("b","",count+" ("+Math.round(count/total*100)+"%)"));const track=el("div","bartrack"),fill=el("div","barfill");fill.style.width=(count/total*100)+"%";track.append(fill);w.append(row,track);sb.append(w)});
+}
+
+/* ---------- Backup ---------- */
+$("#exportBackup").onclick=()=>{
+ const backup={exportedAt:new Date().toISOString(),project:"diva-moderne-mode",products:prods,orders:orders.map(o=>({...o,createdAt:orderDate(o)?.toISOString()||null})),promotions,storeSettings};
+ try{const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=el("a");a.href=url;a.download="diva-moderne-mode-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);$("#backupMsg").textContent="تم تجهيز ملف النسخة الاحتياطية.";}catch(e){$("#backupMsg").textContent="تعذّر إنشاء النسخة الاحتياطية.";}
+};
+function showErr(prefix,e){console.error(e);$("#ae").textContent=prefix+" ("+(e.code||"error")+").";}
 </script>
 </body>
 </html>
