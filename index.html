@@ -986,12 +986,12 @@ SHOP FACTS:
 - Promo code DIVA10 gives 10% off.
 - DIVA Circle loyalty: after 4 orders the 5th order is 50% off (customer signs in with the profile icon).
 - The customer can ask the assistant to add an item to the cart (for example "add the gold abaya in size M"); orders are confirmed at checkout in the shop.`};
-async function aiAsk(q){AIH.push({r:'u',t:q});const c=new AbortController(),to=setTimeout(()=>c.abort(),15000);try{const r=await fetch(window.DIVA_AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:AIH.slice(-8),lang:L,catalog:aiCatalog()}),signal:c.signal});const j=await r.json();if(!r.ok||!j.reply)throw new Error('ai');AIH.push({r:'b',t:j.reply});return j.reply}catch(e){AIH.pop();throw e}finally{clearTimeout(to)}}
+async function aiAsk(q,on){AIH.push({r:'u',t:q});const c=new AbortController(),to=setTimeout(()=>c.abort(),25000);let full='';try{const r=await fetch(window.DIVA_AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:AIH.slice(-10),lang:L,catalog:aiCatalog()}),signal:c.signal});if(!r.ok||!r.body)throw new Error('ai');const rd=r.body.getReader(),dc=new TextDecoder();for(;;){const{done,value}=await rd.read();if(done)break;full+=dc.decode(value,{stream:true});if(full.trim()&&full.trim()[0]!=='{')on(full)}if(full.trim()[0]==='{'){const j=JSON.parse(full);if(!j.reply)throw new Error('ai');full=j.reply;on(full)}if(!full.trim())throw new Error('empty');AIH.push({r:'b',t:full});return full}catch(e){AIH.pop();if(full.trim()&&full.trim()[0]!=='{'){AIH.push({r:'u',t:q},{r:'b',t:full});return full}throw e}finally{clearTimeout(to)}}
 function ask(q){q=q.trim();if(!q)return;const u=document.createElement('div');u.className='m u';u.textContent=q;MS.append(u);const d=document.createElement('div');d.className='m b dots';d.innerHTML='<i></i><i></i><i></i>';MS.append(d);MS.scrollTop=MS.scrollHeight;$('#qi').value='';
 const local=()=>{d.remove();const[a,g]=reply(q);bot(a);chips(g.length?g:['ab','tr','po','sa'])};
 const act=CX.pend||/ajout|rajout|mets|mettez|add |اضف|ضيف|اطلب|commander|panier|cart|سله|سلت|ma commande/.test(nz(q));
 if(!window.DIVA_AI_URL||act){setTimeout(local,700);return}
-aiAsk(q).then(a=>{d.remove();bot(esc(a).replace(/\n/g,'<br>'));const[,g]=reply(q);chips(g&&g.length?g:['ab','tr','po','sa'])}).catch(()=>setTimeout(local,200))}
+let m=null;aiAsk(q,t=>{if(!m){d.remove();m=document.createElement('div');m.className='m b';MS.append(m)}m.innerHTML=esc(t).replace(/\n/g,'<br>');MS.scrollTop=MS.scrollHeight}).then(()=>{const[,g]=reply(q);chips(g&&g.length?g:['ab','tr','po','sa'])}).catch(()=>{if(!m)setTimeout(local,200)})}
 $('#cf').addEventListener('submit',e=>{e.preventDefault();ask($('#qi').value)});
 fy.addEventListener('keydown',e=>{if(e.key=='Enter')chat(1)});
 /* petals + splash */
