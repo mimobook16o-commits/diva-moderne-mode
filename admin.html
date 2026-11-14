@@ -82,10 +82,10 @@ a{color:var(--gold)}
 
   <section id="app" class="hide">
     <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
-    <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button><button class="chip" id="tS">الإحصائيات</button><button class="chip" id="tR">العروض</button><button class="chip" id="tV">التقييمات</button></div>
+    <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button><button class="chip" id="tS">الإحصائيات</button><button class="chip" id="tR">العروض</button><button class="chip" id="tV">التقييمات</button><button class="chip" id="tT">الإعدادات</button></div>
     <p class="err" id="ae"></p>
     <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
-    <div id="ps" class="hide"></div><div id="pr" class="hide"></div><div id="pv" class="hide"></div>
+    <div id="ps" class="hide"></div><div id="pr" class="hide"></div><div id="pv" class="hide"></div><div id="pt" class="hide"></div>
     <div id="pp" class="hide"><div id="plist"></div><div id="pform" class="box fm hide"></div></div>
   </section>
 </main>
@@ -107,7 +107,7 @@ const db = getFirestore(app);
 const $ = s => document.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const STATUS = { new: "جديد", confirmed: "مؤكَّد", shipped: "قيد الشحن", delivered: "تم التسليم", cancelled: "ملغى" };
-let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null, promos = {}, reviews = [], pform = null, unsubX = [];
+let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null, promos = {}, reviews = [], pform = null, unsubX = [], settings = {}, firstSnap = {}, bumpT = null;
 
 const loginMsg = code => ({
   "auth/invalid-credential": "البريد أو كلمة المرور غير صحيحة.",
@@ -133,9 +133,10 @@ onAuthStateChanged(auth, user => {
   unsubX.forEach(f => f()); unsubX = [];
   if (!user) { orders = []; $("#pw").value = ""; return; }
   const fail = n => err => { console.error(err); $("#ae").textContent = "تعذّر تحميل " + n + " (" + err.code + "). الصقي القواعد الجديدة في Firestore."; };
-  unsubX.push(onSnapshot(collection(db, "promos"), snap => { promos = {}; snap.docs.forEach(d => { promos[d.id] = d.data(); }); renderPr(); }, fail("العروض")));
+  unsubX.push(onSnapshot(collection(db, "promos"), snap => { promos = {}; snap.docs.forEach(d => { promos[d.id] = d.data(); }); bump("promos"); renderPr(); }, fail("العروض")));
+  unsubX.push(onSnapshot(doc(db, "settings", "main"), snap => { settings = snap.exists() ? snap.data() : {}; bump("settings"); renderT(); }, fail("الإعدادات")));
   unsubX.push(onSnapshot(collection(db, "reviews"), snap => { reviews = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.createdAt && b.createdAt.seconds) || 0) - ((a.createdAt && a.createdAt.seconds) || 0)); renderV(); renderS(); }, fail("التقييمات")));
-  unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); renderP(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من لصق القواعد الجديدة."; });
+  unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); bump("products"); renderP(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من لصق القواعد الجديدة."; });
   unsub = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")),
     snap => { $("#ae").textContent = ""; orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); renderS(); },
     err => {
@@ -203,12 +204,12 @@ function card(o) {
 }
 
 /* ---------- Products ---------- */
-const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 3600 }];
+const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 4200 }];
 let BI = null;
 const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.json", { cache: "no-store" }); if (!r.ok) throw new Error("missing"); BI = await r.json(); } return BI; };
 const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
-const showTab = t => { [["o", "#po", "#tO"], ["p", "#pp", "#tP"], ["s", "#ps", "#tS"], ["r", "#pr", "#tR"], ["v", "#pv", "#tV"]].forEach(([k, pn, tb]) => { $(pn).classList.toggle("hide", t !== k); $(tb).classList.toggle("on", t === k); }); };
-$("#tO").onclick = () => showTab("o"); $("#tP").onclick = () => showTab("p"); $("#tS").onclick = () => showTab("s"); $("#tR").onclick = () => showTab("r"); $("#tV").onclick = () => showTab("v");
+const showTab = t => { [["o", "#po", "#tO"], ["p", "#pp", "#tP"], ["s", "#ps", "#tS"], ["r", "#pr", "#tR"], ["v", "#pv", "#tV"], ["t", "#pt", "#tT"]].forEach(([k, pn, tb]) => { $(pn).classList.toggle("hide", t !== k); $(tb).classList.toggle("on", t === k); }); };
+$("#tO").onclick = () => showTab("o"); $("#tP").onclick = () => showTab("p"); $("#tS").onclick = () => showTab("s"); $("#tR").onclick = () => showTab("r"); $("#tV").onclick = () => showTab("v"); $("#tT").onclick = () => showTab("t");
 const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 700 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .62)); }; im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); });
 const PAL = [["أسود", "#111111"], ["أبيض", "#F5F5F5"], ["رمادي", "#8A8A8A"], ["فضي", "#C9CCD2"], ["ذهبي", "#D4A937"], ["بيج", "#D9C3A5"], ["شامبانيا", "#E4C9B6"], ["بني", "#6B4226"], ["وردي", "#E8A0B4"], ["وردي فاتح", "#F3C6D0"], ["وردي ذهبي", "#E3A08A"], ["وردي قديم", "#B96A78"], ["أحمر", "#C0262D"], ["عنابي", "#6D1A36"], ["برتقالي", "#E07B2D"], ["أصفر", "#F0D24A"], ["أخضر", "#3F8F4F"], ["زيتي", "#6B6B2F"], ["أخضر زمردي", "#0E6B5C"], ["سماوي", "#4FB5D6"], ["أزرق", "#2B5DAA"], ["كحلي", "#16224A"], ["بنفسجي", "#6B3FA0"], ["موف", "#9B7BC1"], ["وردي غباري", "#D4A5A5"], ["وردي بودري", "#F0D2D2"], ["أخضر سيج", "#9CAF88"], ["أخضر نعناعي", "#A8D5BA"], ["أخضر غابات", "#2F4F3A"], ["كاكي", "#7A7A4A"], ["أزرق بترولي", "#1F5C6B"], ["أزرق سماوي", "#8EC5E8"], ["أزرق رمادي", "#7A8FA3"], ["أزرق ملكي", "#2748A8"], ["أزرق باودر", "#B7CBE0"], ["رمادي فحمي", "#3A3A3C"], ["بيج رملي", "#D8C3A0"], ["نبيتي", "#7B2D43"], ["خردلي", "#D1A02A"], ["فوشيا", "#C2185B"], ["مرجاني", "#F08A7A"], ["خوخي", "#F5B895"], ["طوبي", "#C0664A"], ["نحاسي", "#B4693E"], ["برونزي", "#A8743A"], ["كاميل", "#B88A4F"], ["موكا", "#8B6B57"], ["كريمي", "#F3E9D2"], ["لافندر", "#C8B6E2"], ["ليلكي", "#BFA3D0"], ["أرجواني", "#5A2A55"], ["بني شوكولاتة", "#4A2C20"]];
 const hex2rgb = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
@@ -286,7 +287,7 @@ function renderForm() {
   F.append(row);
 }
 
-function saveForm() {
+async function saveForm() {
   const f = form, p = Number(f.p), o = Number(f.o) || 0, err = m => { $("#fe").textContent = m; };
   if (!(p > 0)) return err("اكتبي سعراً صحيحاً.");
   if (o && o <= p) return err("السعر قبل التخفيض يجب أن يكون أكبر من السعر الحالي.");
@@ -298,7 +299,12 @@ function saveForm() {
   if (!colors.length) return err("أضيفي صورة واحدة على الأقل.");
   const z = f.z.split(",").map(x => x.trim()).filter(Boolean);
   const data = { n, d, p, o, z, colors, hidden: !!f.hidden, createdAt: f.createdAt || Date.now() };
-  if (JSON.stringify(data).length > 950000) return err("الصور كبيرة جداً. قلّلي عدد الصور (الحد حوالي 20 صورة صغيرة للمنتج).");
+  for (const [mx, q] of [[600, .55], [500, .5], [420, .45], [340, .4]]) {
+    if (JSON.stringify(data).length <= 980000) break;
+    $("#fe").textContent = "جارٍ ضغط الصور لتتسع في المنتج…";
+    for (const c of data.colors) c.imgs = await Promise.all(c.imgs.map(s => reshrink(s, mx, q)));
+  }
+  if (JSON.stringify(data).length > 980000) return err("الصور كثيرة جداً حتى بعد الضغط التلقائي. احذفي بعضها.");
   $("#fe").textContent = "جارٍ الحفظ…"; save(f.id, data);
 }
 
@@ -390,6 +396,25 @@ function renderV() {
     c.append(el("p", "m", [r.name, r.ref, r.products].filter(Boolean).join(" · ")));
     const a = el("div", "acts"); a.append(act("حذف", "ghost danger", () => { if (confirm("حذف هذا التقييم؟")) deleteDoc(doc(db, "reviews", r.id)); })); c.append(a); P.append(c);
   });
+}
+
+/* ---------- Store settings + live-update signal ---------- */
+const ZN = ["Alger، Blida، Boumerdès، Tipaza …", "Oran، Constantine، Annaba، Tizi Ouzou …", "Biskra، M'Sila، Djelfa، Laghouat …", "Adrar، Tamanrasset، Illizi، Tindouf …"];
+const bump = k => { if (!firstSnap[k]) { firstSnap[k] = 1; return; } clearTimeout(bumpT); bumpT = setTimeout(() => setDoc(doc(db, "meta", "version"), { t: Date.now() }).catch(console.error), 800); };
+const reshrink = (src, mx, q) => new Promise(ok => { const im = new Image(); im.onload = () => { const k = Math.min(1, mx / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", q)); }; im.onerror = () => ok(src); im.src = src; });
+function renderT() {
+  const P = $("#pt"); P.textContent = "";
+  const s = { free: 10000, rates: [[450, 300], [650, 450], [900, 650], [1400, 1000]], ...settings }, box = el("div", "box fm");
+  box.append(el("h2", "", "إعدادات التوصيل"), el("p", "sub", "تُطبَّق على الطلبيات الجديدة في المتجر خلال دقيقة تقريباً."));
+  const fi = el("input"); fi.type = "number"; fi.value = s.free; box.append(el("label", "", "حد التوصيل المجاني (DZD)"), fi);
+  const ins = s.rates.map((r, i) => { const a = el("input"), b = el("input"); a.type = b.type = "number"; a.value = r[0]; b.value = r[1]; box.append(el("label", "", "المنطقة " + (i + 1) + ": " + ZN[i]), el("small", "m", "سعر التوصيل للمنزل"), a, el("small", "m", "سعر التوصيل للمكتب (Stop Desk)"), b); return [a, b]; });
+  const er = el("p", "err"); box.append(er);
+  box.append(act("حفظ الإعدادات", "", async () => {
+    const free = Number(fi.value), rates = ins.map(([a, b]) => [Number(a.value), Number(b.value)]);
+    if (!(free > 0) || rates.some(r => !(r[0] >= 0) || !(r[1] >= 0))) return er.textContent = "تأكدي من الأرقام.";
+    try { await setDoc(doc(db, "settings", "main"), { free, rates }); er.textContent = "تم الحفظ."; } catch (e) { console.error(e); er.textContent = "تعذّر الحفظ (" + e.code + ")."; }
+  }));
+  P.append(box);
 }
 </script>
 </body>
