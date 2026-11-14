@@ -560,7 +560,7 @@ Object.assign(D,{
 Object.assign(D,{photoTap:[`Touchez le cercle pour choisir votre photo`,`Tap the circle to choose your photo`,`اضغطي على الدائرة لاختيار صورتك`]});const CAM='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
 Object.assign(D,{ty1:[`Merci infiniment, {n} !`,`Thank you so much, {n}!`,`شكرًا جزيلًا يا {n}!`],ty2:[`Votre choix reflète un goût rare et une élégance remarquable. Chaque pièce sera préparée avec soin, comme un bijou, pour sublimer votre grâce.`,`Your choice reflects rare taste and remarkable elegance. Every piece will be prepared with care, like a jewel, to enhance your grace.`,`اختيارك يعكس ذوقًا رفيعًا وأناقة لافتة. ستُجهَّز كل قطعة بعناية كأنها جوهرة، لتزيد من رقّتك وجمالك.`],ty3:[`Votre commande a bien été envoyée à la boutique. Nous vous contacterons très bientôt pour la confirmer.`,`Your order has been sent to the boutique. We will contact you very soon to confirm it.`,`تم إرسال طلبك إلى المتجر بنجاح، وسنتواصل معك قريبًا جدًا لتأكيده.`],ty4:[`Avec toute notre gratitude — Diva Moderne Mode ✦`,`With all our gratitude — Diva Moderne Mode ✦`,`مع خالص امتناننا — Diva Moderne Mode ✦`]});
 const t=k=>(D[k]||[k,k,k])[li];
-const FREE=10000,RT=[[450,300],[650,450],[900,650],[1400,1000]],SZ=['S','M','L','XL','XXL'];
+let FREE=10000,RT=[[450,300],[650,450],[900,650],[1400,1000]],SZ=['S','M','L','XL','XXL'];
 const PR={ab:{p:5200,v:['or','ar','ro'],z:SZ,n:[`L’Abaya Éclat`,`Éclat Abaya`,`عباية إيكلا`],d:[`Abaya ouverte, coupe ample et fluide, bordure et poignets perlés.`,`Open abaya, loose fluid cut, beaded trim and cuffs.`,`عباية مفتوحة بقصّة واسعة انسيابية وحواف وأساور مرصّعة.`]},
 tr:{p:13100,o:15600,v:['tr'],z:SZ,n:[`Le Trio Éclat`,`Éclat Trio`,`ثلاثية إيكلا`],d:[`Les trois abayas : or, argent et rose doré.`,`All three abayas: gold, silver and rose gold.`,`العبايات الثلاث: ذهبي وفضي ووردي ذهبي.`]},
 po:{p:3500,v:['po'],z:['S/M','L/XL','XXL'],n:[`Le Poncho Rose`,`The Rose Poncho`,`البونشو الوردي`],d:[`Satin fluide, bas asymétrique, deux étoiles de mer dorées.`,`Fluid satin, asymmetric hem, two golden starfish.`,`ساتان انسيابي بحافة غير متماثلة ونجمتي بحر ذهبيتين.`]},
@@ -571,7 +571,8 @@ const VC={or:'#D4A937',ar:'#C9CCD2',ro:'#E3A08A',tr:'conic-gradient(#D4A937 0 33
 const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0'),cu=()=>L=='ar'?'د.ج':'DZD',P=n=>fmt(n)+'\u00a0'+cu();
 const WL=Z.flat().sort((a,b)=>a.localeCompare(b,'fr')),zone=w=>Z.findIndex(a=>a.includes(w));
 const nm=(g,v)=>PR[g].n[li]+(PR[g].v.length>1?' · '+VN[v][li]:'');
-const rewardUser=()=>U()||AC()[(FV.ph||'').replace(/[\s.\-]/g,'')];const sums=(w,m)=>{const sub=CART.reduce((s,l)=>s+PR[l.g].p*l.q,0),dis=(rewardUser()&&rewardUser().st>=4)?Math.round(sub*.5):PROMO?Math.round(sub*.1):0,net=sub-dis;let sh=null;if(w)sh=(net>=FREE||(m=='r'&&CART.some(l=>PR[l.g].fd)))?0:RT[zone(w)][m=='r'?1:0];return{sub,dis,net,sh,tot:net+(sh||0)}};
+const rewardUser=()=>U()||AC()[(FV.ph||'').replace(/[\s.\-]/g,'')];let RWI=-1;const rwIdx=()=>{if(RWI>=0&&RWI<CART.length)return RWI;let b=0;CART.forEach((l,i)=>{if(PR[l.g].p>PR[CART[b].g].p)b=i});return b};
+const sums=(w,m)=>{const sub=CART.reduce((s,l)=>s+PR[l.g].p*l.q,0),dis=(rewardUser()&&rewardUser().st>=4&&CART.length)?Math.round(PR[CART[rwIdx()].g].p*.5):PROMO?Math.round(sub*.1):0,net=sub-dis;let sh=null;if(w)sh=(net>=FREE||(m=='r'&&CART.some(l=>PR[l.g].fd)))?0:RT[zone(w)][m=='r'?1:0];return{sub,dis,net,sh,tot:net+(sh||0)}};
 const pick=a=>a[Math.floor(Math.random()*a.length)];let FAV=ld('dmm_f',[]);
 const AC=()=>ld('dmm_ac',{}),U=()=>{const p=ld('dmm_u',''),a=AC()[p];return a?{ph:p,...a}:null};
 const hsh=async s=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('dmm'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){return btoa(unescape(encodeURIComponent('dmm'+s)))}};
@@ -788,7 +789,7 @@ function drw(){const d=$('#dr');d.classList.add('on');$('#ovd').classList.add('o
 if(VIEW=='done'&&O){d.innerHTML=`<button class="x" data-x="ovd">×</button><div class="ty"><div class="ty-crest">♥</div><h2 class="gt">${t('ty1').replace('{n}',esc(O.name||''))}</h2><p class="ty-p">${t('ty2')}</p><div class="ty-card"><div class="tot"><span>${t('rf')}</span><b>${O.ref}</b></div><div class="tot"><span>${t('tot')}</span><b>${P(O.tot)}</b></div></div><p class="ty-ok">✓ ${t('ty3')}</p><p class="ty-sig">${t('ty4')}</p>${rvWidget()}<button class="btn" data-x="ovd">${t('bk')}</button></div>`;return}
 if(!CART.length){d.innerHTML=`<button class="x" data-x="ovd">×</button><h2 class="gt" style="margin-top:30px">${t('cart')}</h2><p>${t('empty')}</p><button class="btn" data-x="ovd">${t('bk')}</button>`;return}
 const s=sums(FV.wi,FV.dm),rest=FREE-s.net;
-d.innerHTML=`<button class="x" data-x="ovd">×</button><h2 class="gt" style="margin-top:26px">${t('cart')}</h2>${CART.map((l,i)=>`<div class="ln"><img src="${imgs(l.g,l.v)[0]}" alt=""><div><b>${nm(l.g,l.v)}</b><br><small>${l.s} · ${l.q} × ${P(PR[l.g].p)}</small><br><button class="z" style="min-width:34px;height:30px" data-cq="${i}|-1">−</button> <button class="z" style="min-width:34px;height:30px" data-cq="${i}|1">+</button> <button class="z" style="height:30px;font-size:12px" data-rm="${i}">${t('rm')}</button></div><b>${P(PR[l.g].p*l.q)}</b></div>`).join('')}
+d.innerHTML=`<button class="x" data-x="ovd">×</button><h2 class="gt" style="margin-top:26px">${t('cart')}</h2>${CART.map((l,i)=>`<div class="ln"><img src="${imgs(l.g,l.v)[0]}" alt=""><div><b>${nm(l.g,l.v)}</b><br><small>${l.s} · ${l.q} × ${P(PR[l.g].p)}</small><br><button class="z" style="min-width:34px;height:30px" data-cq="${i}|-1">−</button> <button class="z" style="min-width:34px;height:30px" data-cq="${i}|1">+</button> <button class="z" style="height:30px;font-size:12px" data-rm="${i}">${t('rm')}</button> ${(rewardUser()&&rewardUser().st>=4&&CART.length>1)?`<button class="z" style="height:30px;font-size:12px;${i==rwIdx()?'background:#D4A937;color:#21142B':''}" data-rw="${i}">${i==rwIdx()?'✓ ':''}−50%</button>`:''}</div><b>${P(PR[l.g].p*l.q)}</b></div>`).join('')}
 <div style="display:flex;gap:8px;margin-top:14px"><input class="fld" id="pc" placeholder="${t('pc')}" value="${PROMO?'DIVA10':''}" style="margin:0"><button class="btn gh" data-pc>${t('ap')}</button></div><p class="hint" id="pm"></p>
 ${rest>0?`<p>${t('fp').replace('{n}',fmt(rest))}</p><div class="bar"><i style="width:${Math.min(100,Math.round(s.net*100/FREE))}%"></i></div>`:`<p class="hint">✦ ${t('fo')} — ${t('shp')}</p>`}
 <div id="sm">${tt(s,!!FV.wi)}</div>
@@ -989,8 +990,8 @@ SHOP FACTS:
 - The customer can ask the assistant to add an item to the cart (for example "add the gold abaya in size M"); orders are confirmed at checkout in the shop.`};
 async function aiAsk(q,on){AIH.push({r:'u',t:q});const c=new AbortController(),to=setTimeout(()=>c.abort(),25000);let full='';try{const r=await fetch(window.DIVA_AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:AIH.slice(-10),lang:L,catalog:aiCatalog()}),signal:c.signal});if(!r.ok||!r.body)throw new Error('ai');const rd=r.body.getReader(),dc=new TextDecoder();for(;;){const{done,value}=await rd.read();if(done)break;full+=dc.decode(value,{stream:true});if(full.trim()&&full.trim()[0]!=='{')on(full)}if(full.trim()[0]==='{'){const j=JSON.parse(full);if(!j.reply)throw new Error('ai');full=j.reply;on(full)}if(!full.trim())throw new Error('empty');AIH.push({r:'b',t:full});return full}catch(e){AIH.pop();if(full.trim()&&full.trim()[0]!=='{'){AIH.push({r:'u',t:q},{r:'b',t:full});return full}throw e}finally{clearTimeout(to)}}
 let RV=0;
-const rvWidget=()=>{RV=0;return `<div class="rv-box" id="rvb"><p class="ty-p">${R(`Votre avis nous touche (facultatif)`,`We would love your feedback (optional)`,`رأيك يهمنا (اختياري)`)}</p><div class="rv-st">${[1,2,3,4,5].map(n=>`<button type="button" class="rv-s" data-rv="${n}" aria-label="${n}">★</button>`).join('')}</div><textarea class="fld" id="rvt" rows="2" maxlength="500" placeholder="${R(`Qu'avez-vous aimé ?`,`What did you like?`,`ما الذي أعجبك؟`)}"></textarea><button type="button" class="btn gh" id="rvs" style="margin-top:8px">${R(`Envoyer`,`Send`,`إرسال`)}</button><p class="ty-p" id="rvm"></p></div>`};
-document.addEventListener('click',e=>{const s=e.target.closest('[data-rv]');if(s){RV=+s.dataset.rv;$$('.rv-s').forEach(b=>b.classList.toggle('on',+b.dataset.rv<=RV));return}
+const rvWidget=()=>{RV=0;RWI=-1;return `<div class="rv-box" id="rvb"><p class="ty-p">${R(`Votre avis nous touche (facultatif)`,`We would love your feedback (optional)`,`رأيك يهمنا (اختياري)`)}</p><div class="rv-st">${[1,2,3,4,5].map(n=>`<button type="button" class="rv-s" data-rv="${n}" aria-label="${n}">★</button>`).join('')}</div><textarea class="fld" id="rvt" rows="2" maxlength="500" placeholder="${R(`Qu'avez-vous aimé ?`,`What did you like?`,`ما الذي أعجبك؟`)}"></textarea><button type="button" class="btn gh" id="rvs" style="margin-top:8px">${R(`Envoyer`,`Send`,`إرسال`)}</button><p class="ty-p" id="rvm"></p></div>`};
+document.addEventListener('click',e=>{const w=e.target.closest('[data-rw]');if(w){RWI=+w.dataset.rw;drw();return}const s=e.target.closest('[data-rv]');if(s){RV=+s.dataset.rv;$$('.rv-s').forEach(b=>b.classList.toggle('on',+b.dataset.rv<=RV));return}
 if(e.target.closest('#rvs')){const m=$('#rvm');if(!RV){m.textContent=R(`Choisissez une note.`,`Please choose a rating.`,`اختاري عدد النجوم.`);return}
 $('#rvs').disabled=true;Promise.resolve(window.DIVA_SAVE_REVIEW&&window.DIVA_SAVE_REVIEW({ref:O.ref,name:O.name||'',rating:RV,comment:($('#rvt').value||'').slice(0,500),products:O.pn||''})).then(ok=>{$('#rvb').innerHTML=`<p class="ty-p">${ok?R(`Merci pour votre avis ♥`,`Thank you for your review ♥`,`شكرًا على تقييمك ♥`):R(`Envoi impossible pour le moment.`,`Could not send right now.`,`تعذّر الإرسال الآن.`)}</p>`})}});
 function ask(q){q=q.trim();if(!q)return;const u=document.createElement('div');u.className='m u';u.textContent=q;MS.append(u);const d=document.createElement('div');d.className='m b dots';d.innerHTML='<i></i><i></i><i></i>';MS.append(d);MS.scrollTop=MS.scrollHeight;$('#qi').value='';
@@ -1156,43 +1157,61 @@ window.DIVA_SAVE_REVIEW = async r => {
 };
 window.DIVA_LOAD_PRODUCTS = async () => {
   try {
-    const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
-    const snap = await getDocs(collection(getFirestore(window.__divaApp), "products"));
-    let changed = false;
+    const { getFirestore, collection, getDocs, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const db = getFirestore(window.__divaApp);
+    const snap = await getDocs(collection(db, "products"));
+    let ps = null, st = null;
+    try { ps = await getDocs(collection(db, "promos")); } catch (e) { console.error("Promos load error:", e.code); }
+    try { st = await getDoc(doc(db, "settings", "main")); } catch (e) { console.error("Settings load error:", e.code); }
+    /* everything below is synchronous, so the page never shows a half-updated state */
+    const B = window.__base || (window.__base = { pr: JSON.parse(JSON.stringify(PR)), free: FREE, rt: JSON.parse(JSON.stringify(RT)) });
+    Object.keys(PR).forEach(k => { if (B.pr[k]) PR[k] = JSON.parse(JSON.stringify(B.pr[k])); else delete PR[k]; });
+    FREE = B.free; RT.forEach((r, i) => { r[0] = B.rt[i][0]; r[1] = B.rt[i][1]; });
+    const sx = st && st.exists() ? st.data() : null;
+    if (sx) { if (sx.free > 0) FREE = +sx.free; (sx.rates || []).forEach((r, i) => { if (RT[i] && r && r[0] >= 0 && r[1] >= 0) { RT[i][0] = +r[0]; RT[i][1] = +r[1]; } }); }
     snap.forEach(d => {
       const x = d.data(), id = d.id;
       if (x.builtin) {
         const b = PR[id]; if (!b) return;
         if (x.p) b.p = +x.p;
         if (x.o) b.o = +x.o; else if ("o" in x) delete b.o;
-        b.h = !!x.hidden; changed = true; return;
+        b.h = !!x.hidden; return;
       }
       if (!x.p || !Array.isArray(x.n) || !Array.isArray(x.colors)) return;
       const vs = [];
       x.colors.forEach((c, k) => {
         if (!c.imgs || !c.imgs.length) return;
-        const key = id + "_" + k;
-        IM[key] = c.imgs; const nn = Array.isArray(c.nn) && c.nn.length === 3 ? c.nn : [c.n, c.n, c.n]; VN[key] = nn; VD[key] = nn; VC[key] = c.c || "#C6A17E"; vs.push(key);
+        const key = id + "_" + k, nn = Array.isArray(c.nn) && c.nn.length === 3 ? c.nn : [c.n, c.n, c.n];
+        IM[key] = c.imgs; VN[key] = nn; VD[key] = nn; VC[key] = c.c || "#C6A17E"; vs.push(key);
       });
       if (!vs.length) return;
       PR[id] = { p: +x.p, ...(x.o ? { o: +x.o } : {}), v: vs, z: x.z && x.z.length ? x.z : SZ, n: x.n, d: x.d || x.n, h: !!x.hidden };
-      changed = true;
     });
-    try {
-      const ps = await getDocs(collection(getFirestore(window.__divaApp), "promos")), now = Date.now();
-      const on = ps.docs.map(d => d.data()).filter(x => x.active && x.value > 0 && (!x.start || now >= x.start) && (!x.end || now <= x.end + 86399999));
+    if (ps) {
+      const now = Date.now(), on = ps.docs.map(d => d.data()).filter(x => x.active && x.value > 0 && (!x.start || now >= x.start) && (!x.end || now <= x.end + 86399999));
       Object.keys(PR).forEach(g => {
         const p = PR[g], base = p.p; let best = base;
         on.forEach(x => { if (!(x.all || (x.products || []).includes(g))) return; const v = x.type === "pct" ? Math.round(base * (1 - Math.min(x.value, 95) / 100)) : Math.max(0, base - x.value); if (v < best) best = v; });
-        if (best < base) { p.o = Math.max(p.o || 0, base); p.p = best; changed = true; }
+        if (best < base) { p.o = Math.max(p.o || 0, base); p.p = best; }
       });
-    } catch (error) { console.error("Promos load error:", error.code, error.message); }
-    if (changed) {
-      for (let i = CART.length - 1; i >= 0; i--) if (!PR[CART[i].g]) CART.splice(i, 1);
-      render(); upd();
     }
+    for (let i = CART.length - 1; i >= 0; i--) if (!PR[CART[i].g]) CART.splice(i, 1);
+    const sig = JSON.stringify(PR) + FREE + JSON.stringify(RT) + JSON.stringify(Object.keys(IM).map(k => [k, IM[k].length, (IM[k][0] || "").length]));
+    if (sig !== window.__sig) { window.__sig = sig; render(); upd(); }
   } catch (error) { console.error("Products load error:", error.code, error.message); dbg("products load error: " + (error.code || error.message)); }
 };
 window.DIVA_LOAD_PRODUCTS();
+/* pick up admin changes within a minute: one tiny read of meta/version, full reload only when it changed */
+let lastV = null;
+const checkV = async () => {
+  try {
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
+    const v = await getDoc(doc(getFirestore(window.__divaApp), "meta", "version")), t = v.exists() ? v.data().t : 0;
+    if (lastV !== null && t !== lastV) window.DIVA_LOAD_PRODUCTS();
+    lastV = t;
+  } catch (_) {}
+};
+checkV(); setInterval(() => { if (!document.hidden) checkV(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkV(); });
 </script>
 </body></html>
