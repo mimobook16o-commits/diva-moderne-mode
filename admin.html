@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#21142B">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Jost:wght@300;400;500&family=Tajawal:wght@300;400;500&display=swap" rel="stylesheet">
+<title>لوحة التحكم · Diva Moderne Mode</title>
+<style>
+:root{--plum:#21142B;--purple:#2B1A36;--deep:#3C1F44;--berry:#B65479;--pink:#CF7595;--gold:#C6A17E;--champ:#DCBCA0;--ivory:#F2E6E3;--mut:#c9b4c4;--line:rgba(198,161,126,.25);--ok:#9be3b6;
+--gd:linear-gradient(100deg,var(--gold),var(--champ) 30%,var(--ivory) 50%,var(--champ) 70%,var(--gold))}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(1000px 640px at 85% -8%,var(--deep),transparent 62%),radial-gradient(800px 600px at -10% 40%,#3a1d44,transparent 60%),var(--plum);color:var(--ivory);font:300 17px/1.65 Tajawal,Jost,sans-serif;padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 28px)}
+main{max-width:720px;margin:0 auto}
+.brand{text-align:center;margin:22px 0 14px}
+.brand b{display:block;font:400 clamp(54px,14vw,84px)/1.05 'Great Vibes',cursive}
+.brand span{display:block;font:italic 400 18px 'Cormorant Garamond',serif;letter-spacing:.16em;color:var(--gold)}
+.brand i{display:block;width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto 0}
+h1{font:500 26px Tajawal,serif;margin:6px 0;color:var(--champ)}
+.sub{color:var(--mut);margin:0 0 14px;font-size:15px}
+input,select{font:inherit;color:var(--ivory);width:100%;border-radius:999px;border:1px solid var(--line);background:rgba(33,20,43,.7);padding:.8em 1.2em;outline:0}
+input:focus,select:focus{border-color:var(--gold)}
+select option{background:var(--plum)}
+button{font:500 16px Tajawal,sans-serif;width:100%;border:0;border-radius:999px;padding:.85em 1.9em;letter-spacing:.04em;cursor:pointer;color:var(--plum);background:var(--gd);background-size:220% 100%;box-shadow:0 6px 24px rgba(198,161,126,.25);transition:transform .3s,background-position .3s}
+button:hover{transform:translateY(-2px);background-position:100% 0}
+button.ghost{width:auto;background:transparent;color:var(--champ);border:1px solid var(--line);box-shadow:none;padding:.45em 1.2em}
+label{display:block;margin:14px 0 6px;color:var(--mut);font-size:15px}
+.box{background:linear-gradient(160deg,rgba(60,31,68,.85),rgba(43,26,54,.85));border:1px solid var(--line);border-radius:24px;padding:22px}
+.err{color:var(--pink);min-height:1.5em;margin:10px 0 0;font-size:15px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:6px 0 14px}
+.chip{flex:none;width:auto;background:transparent;color:var(--ivory);border:1px solid var(--line);padding:.35em 1.1em;font-weight:400;box-shadow:none;font-size:15px}
+.chip.on{background:var(--gd);color:var(--plum);font-weight:500;border-color:transparent}
+.card{background:linear-gradient(160deg,rgba(60,31,68,.85),rgba(43,26,54,.85));border:1px solid var(--line);border-radius:24px;padding:16px 16px 18px;margin:0 0 14px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ref{font:600 18px 'Cormorant Garamond',serif;letter-spacing:.06em;color:var(--champ);direction:ltr}
+.date{color:var(--mut);font-size:13px;direction:ltr}
+.name{font-size:19px;font-weight:500;margin:8px 0 2px}
+.links{display:flex;gap:16px;margin:2px 0 8px;direction:ltr;justify-content:flex-end}
+a{color:var(--gold)}
+.items{white-space:pre-wrap;background:rgba(33,20,43,.65);border:1px solid var(--line);border-radius:16px;padding:10px 12px;font-size:14px;direction:ltr;text-align:left;margin:10px 0}
+.tot{font:600 20px 'Cormorant Garamond',serif;color:var(--champ);margin:6px 0 12px}
+.m{color:var(--mut);font-size:15px;margin:2px 0}
+.hide{display:none}
+.empty{color:var(--mut);text-align:center;padding:40px 0}
+.tabs{display:flex;gap:8px;margin:4px 0 14px;overflow-x:auto}.tabs .chip{flex:none;text-align:center}
+.p{display:flex;gap:12px;align-items:center}.p img{width:64px;height:80px;object-fit:cover;border-radius:14px;border:1px solid var(--line);flex:none}
+.p .ph{width:64px;height:80px;border-radius:14px;border:1px solid var(--line);flex:none;display:grid;place-items:center;color:var(--gold);font-size:22px}
+.p h3{margin:0;font:500 17px Tajawal,sans-serif}.badge{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:99px;padding:0 10px;color:var(--mut);margin-inline-start:6px}
+.acts{display:flex;gap:8px;margin-top:12px}.acts button{width:auto;flex:1;padding:.5em .6em;font-size:14px}
+.acts .ghost{flex:1}.danger{color:var(--pink)!important}
+.fm label{margin-top:12px}.fm h2{font:500 20px Tajawal,sans-serif;color:var(--champ);margin:0 0 8px}
+.cb{border:1px solid var(--line);border-radius:20px;padding:12px;margin:10px 0}
+.cb input[type=color]{height:44px;padding:4px}
+.th{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.th div{position:relative}.th img{width:64px;height:80px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.th b{position:absolute;top:-6px;inset-inline-end:-6px;background:var(--pink);color:var(--plum);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+.sb{background:linear-gradient(160deg,rgba(60,31,68,.85),rgba(43,26,54,.85));border:1px solid var(--line);border-radius:20px;padding:12px 14px}
+.sb b{display:block;font:600 24px 'Cormorant Garamond',serif;color:var(--champ)}.sb span{color:var(--mut);font-size:14px}
+.ln{display:flex;gap:10px;align-items:center;margin:8px 0;background:rgba(33,20,43,.65);border:1px solid var(--line);border-radius:16px;padding:8px}
+.ln img{width:58px;height:72px;object-fit:cover;border-radius:12px;flex:none}.ln .ph{width:58px;height:72px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);flex:none}
+.ln div{font-size:14px;line-height:1.4}.ln small{color:var(--mut)}
+.sw{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);vertical-align:middle;margin-inline-end:6px}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><b>Diva Moderne Mode</b><span>ADMIN</span><i></i></div>
+  <section id="login" class="box">
+    <h1>لوحة التحكم</h1>
+    <p class="sub">دخول خاص بصاحبة المتجر</p>
+    <label for="em">البريد الإلكتروني</label>
+    <input id="em" type="email" autocomplete="username" inputmode="email" dir="ltr">
+    <label for="pw">كلمة المرور</label>
+    <input id="pw" type="password" autocomplete="current-password" dir="ltr">
+    <p style="margin:16px 0 0"><button id="go">دخول</button></p>
+    <p class="err" id="le"></p>
+  </section>
+
+  <section id="app" class="hide">
+    <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
+    <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button><button class="chip" id="tS">الإحصائيات</button><button class="chip" id="tR">العروض</button><button class="chip" id="tV">التقييمات</button></div>
+    <p class="err" id="ae"></p>
+    <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
+    <div id="ps" class="hide"></div><div id="pr" class="hide"></div><div id="pv" class="hide"></div>
+    <div id="pp" class="hide"><div id="plist"></div><div id="pform" class="box fm hide"></div></div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyAdLPLssxZpc1587HIXBfQlAC7w21Pqxms",
+  authDomain: "diva-moderne-mode.firebaseapp.com",
+  projectId: "diva-moderne-mode",
+  appId: "1:1023793541713:web:e586f8d8e7153af287fe70"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const STATUS = { new: "جديد", confirmed: "مؤكَّد", shipped: "قيد الشحن", delivered: "تم التسليم", cancelled: "ملغى" };
+let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null, promos = {}, reviews = [], pform = null, unsubX = [];
+
+const loginMsg = code => ({
+  "auth/invalid-credential": "البريد أو كلمة المرور غير صحيحة.",
+  "auth/invalid-email": "البريد الإلكتروني غير صالح.",
+  "auth/too-many-requests": "محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة.",
+  "auth/network-request-failed": "مشكلة في الشبكة.",
+  "auth/operation-not-allowed": "تسجيل الدخول بالبريد وكلمة المرور غير مفعّل في Firebase."
+}[code] || "تعذّر الدخول (" + code + ")");
+
+$("#go").onclick = async () => {
+  $("#le").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("#em").value.trim(), $("#pw").value); }
+  catch (e) { console.error(e); $("#le").textContent = loginMsg(e.code); }
+};
+$("#pw").addEventListener("keydown", e => { if (e.key === "Enter") $("#go").click(); });
+$("#out").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  $("#login").classList.toggle("hide", !!user);
+  $("#app").classList.toggle("hide", !user);
+  if (unsub) { unsub(); unsub = null; }
+  if (unsubP) { unsubP(); unsubP = null; }
+  unsubX.forEach(f => f()); unsubX = [];
+  if (!user) { orders = []; $("#pw").value = ""; return; }
+  const fail = n => err => { console.error(err); $("#ae").textContent = "تعذّر تحميل " + n + " (" + err.code + "). الصقي القواعد الجديدة في Firestore."; };
+  unsubX.push(onSnapshot(collection(db, "promos"), snap => { promos = {}; snap.docs.forEach(d => { promos[d.id] = d.data(); }); renderPr(); }, fail("العروض")));
+  unsubX.push(onSnapshot(collection(db, "reviews"), snap => { reviews = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.createdAt && b.createdAt.seconds) || 0) - ((a.createdAt && a.createdAt.seconds) || 0)); renderV(); renderS(); }, fail("التقييمات")));
+  unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); renderP(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من لصق القواعد الجديدة."; });
+  unsub = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")),
+    snap => { $("#ae").textContent = ""; orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); renderS(); },
+    err => {
+      console.error(err);
+      $("#ae").textContent = err.code === "permission-denied"
+        ? "هذا الحساب غير مسموح له بقراءة الطلبيات. تحقق من قواعد Firestore والبريد المحدد فيها."
+        : "تعذّر تحميل الطلبيات (" + err.code + "). تأكد أن قاعدة Firestore منشأة.";
+    });
+});
+
+function render() {
+  const counts = { all: orders.length };
+  orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
+  $("#cnt").textContent = orders.length + " طلبية";
+  const today = new Date().toDateString(), live = orders.filter(o => o.status !== "cancelled");
+  const st = [[orders.filter(o => o.status === "new").length, "طلبيات جديدة"], [orders.filter(o => o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString() === today).length, "طلبيات اليوم"], [orders.length, "كل الطلبيات"], [money(live.reduce((a, o) => a + Number(o.total || 0), 0)), "المبيعات (بدون الملغاة)"]];
+  $("#stats").textContent = ""; st.forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); $("#stats").append(b); });
+  const chips = $("#chips"); chips.textContent = "";
+  [["all", "الكل"], ...Object.entries(STATUS)].forEach(([k, label]) => {
+    const b = el("button", "chip" + (filter === k ? " on" : ""), label + " (" + (counts[k] || 0) + ")");
+    b.onclick = () => { filter = k; render(); };
+    chips.append(b);
+  });
+  const list = $("#list"); list.textContent = "";
+  const qv = ($("#q").value || "").trim().toLowerCase();
+  const shown = orders.filter(o => (filter === "all" || o.status === filter) && (!qv || [o.name, o.phone, o.ref, o.wilaya].join(" ").toLowerCase().includes(qv)));
+  if (!shown.length) { list.append(el("p", "empty", "لا توجد طلبيات هنا بعد.")); return; }
+  shown.forEach(o => list.append(card(o)));
+}
+
+function card(o) {
+  const c = el("div", "card");
+  const r = el("div", "row");
+  r.append(el("span", "ref", o.ref || o.id));
+  const when = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "";
+  r.append(el("span", "date", when));
+  c.append(r, el("div", "name", o.name || ""));
+  const links = el("div", "links");
+  const tel = el("a", "", o.phone || ""); tel.href = "tel:" + (o.phone || "");
+  const digits = String(o.phone || "").replace(/\D/g, "").replace(/^0/, "213");
+  const wa = el("a", "", "WhatsApp"); wa.href = "https://wa.me/" + digits; wa.target = "_blank"; wa.rel = "noopener";
+  links.append(tel, wa);
+  c.append(links);
+  c.append(el("p", "m", [o.wilaya, o.commune, o.address].filter(Boolean).join("، ")));
+  c.append(el("p", "m", "التوصيل: " + (o.delivery || "")));
+  if (o.notes) c.append(el("p", "m", "ملاحظات: " + o.notes));
+  if (Array.isArray(o.lines) && o.lines.length) {
+    o.lines.forEach(l => { const r = el("div", "ln"); if (l.img) { const i = el("img"); i.src = l.img; i.onclick = () => { i.style.width = i.style.width ? "" : "160px"; i.style.height = i.style.height ? "" : "auto"; }; r.append(i); } else r.append(el("div", "ph", "✦")); const d = el("div"); d.append(el("div", "", l.n || ""), el("small", "", "المقاس: " + (l.s || "-") + "  ·  الكمية: " + (l.q || 1)), el("div", "", money((l.p || 0) * (l.q || 1)))); r.append(d); c.append(r); });
+  } else c.append(el("div", "items", o.items || ""));
+  const t = el("p", "tot", "المجموع: " + Number(o.total || 0).toLocaleString("fr-FR") + " DZD");
+  c.append(t);
+  const sel = el("select");
+  Object.entries(STATUS).forEach(([k, label]) => { const op = el("option", "", label); op.value = k; sel.append(op); });
+  sel.value = o.status || "new";
+  sel.onchange = async () => {
+    try { await updateDoc(doc(db, "orders", o.id), { status: sel.value }); }
+    catch (e) { console.error(e); $("#ae").textContent = "تعذّر تحديث الحالة (" + e.code + ")."; sel.value = o.status || "new"; }
+  };
+  c.append(sel);
+  const a = el("div", "acts");
+  a.append(act("نسخ الطلبية", "ghost", async () => { try { await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.items, "المجموع: " + money(o.total)].join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
+    act("حذف", "ghost danger", () => { if (confirm("حذف هذه الطلبية نهائياً؟")) deleteDoc(doc(db, "orders", o.id)); }));
+  c.append(a);
+  return c;
+}
+
+/* ---------- Products ---------- */
+const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 3600 }];
+let BI = null;
+const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.json", { cache: "no-store" }); if (!r.ok) throw new Error("missing"); BI = await r.json(); } return BI; };
+const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
+const showTab = t => { [["o", "#po", "#tO"], ["p", "#pp", "#tP"], ["s", "#ps", "#tS"], ["r", "#pr", "#tR"], ["v", "#pv", "#tV"]].forEach(([k, pn, tb]) => { $(pn).classList.toggle("hide", t !== k); $(tb).classList.toggle("on", t === k); }); };
+$("#tO").onclick = () => showTab("o"); $("#tP").onclick = () => showTab("p"); $("#tS").onclick = () => showTab("s"); $("#tR").onclick = () => showTab("r"); $("#tV").onclick = () => showTab("v");
+const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 700 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .62)); }; im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); });
+const PAL = [["أسود", "#111111"], ["أبيض", "#F5F5F5"], ["رمادي", "#8A8A8A"], ["فضي", "#C9CCD2"], ["ذهبي", "#D4A937"], ["بيج", "#D9C3A5"], ["شامبانيا", "#E4C9B6"], ["بني", "#6B4226"], ["وردي", "#E8A0B4"], ["وردي فاتح", "#F3C6D0"], ["وردي ذهبي", "#E3A08A"], ["وردي قديم", "#B96A78"], ["أحمر", "#C0262D"], ["عنابي", "#6D1A36"], ["برتقالي", "#E07B2D"], ["أصفر", "#F0D24A"], ["أخضر", "#3F8F4F"], ["زيتي", "#6B6B2F"], ["أخضر زمردي", "#0E6B5C"], ["سماوي", "#4FB5D6"], ["أزرق", "#2B5DAA"], ["كحلي", "#16224A"], ["بنفسجي", "#6B3FA0"], ["موف", "#9B7BC1"], ["وردي غباري", "#D4A5A5"], ["وردي بودري", "#F0D2D2"], ["أخضر سيج", "#9CAF88"], ["أخضر نعناعي", "#A8D5BA"], ["أخضر غابات", "#2F4F3A"], ["كاكي", "#7A7A4A"], ["أزرق بترولي", "#1F5C6B"], ["أزرق سماوي", "#8EC5E8"], ["أزرق رمادي", "#7A8FA3"], ["أزرق ملكي", "#2748A8"], ["أزرق باودر", "#B7CBE0"], ["رمادي فحمي", "#3A3A3C"], ["بيج رملي", "#D8C3A0"], ["نبيتي", "#7B2D43"], ["خردلي", "#D1A02A"], ["فوشيا", "#C2185B"], ["مرجاني", "#F08A7A"], ["خوخي", "#F5B895"], ["طوبي", "#C0664A"], ["نحاسي", "#B4693E"], ["برونزي", "#A8743A"], ["كاميل", "#B88A4F"], ["موكا", "#8B6B57"], ["كريمي", "#F3E9D2"], ["لافندر", "#C8B6E2"], ["ليلكي", "#BFA3D0"], ["أرجواني", "#5A2A55"], ["بني شوكولاتة", "#4A2C20"]];
+const hex2rgb = x => [1, 3, 5].map(i => parseInt(x.slice(i, i + 2), 16));
+const colorName = x => { const a = hex2rgb(x); return PAL.map(([n, c]) => [n, hex2rgb(c).reduce((s, v, i) => s + (v - a[i]) ** 2, 0)]).sort((p, q) => p[1] - q[1])[0][0]; };
+const dominant = src => new Promise(ok => { const im = new Image(); im.onload = () => { const N = 40, c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d"); g.drawImage(im, 0, 0, N, N); const d = g.getImageData(0, 0, N, N).data, bk = {}; for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const i = (y * N + x) * 4, r = d[i], gg = d[i + 1], b = d[i + 2], mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 510, sat = mx ? (mx - mn) / mx : 0; if (l > .94) continue; const cw = 1 - Math.hypot(x - N / 2, y - N / 2) / N, k = (r >> 4) + "," + (gg >> 4) + "," + (b >> 4), e = bk[k] || (bk[k] = { w: 0, r: 0, g: 0, b: 0, n: 0 }), w = cw * (.35 + sat); e.w += w; e.r += r; e.g += gg; e.b += b; e.n++; } const t = Object.values(bk).sort((p, q) => q.w - p.w)[0]; ok(t ? "#" + [t.r, t.g, t.b].map(v => Math.round(v / t.n).toString(16).padStart(2, "0")).join("") : "#888888"); }; im.onerror = () => ok("#888888"); im.src = src; });
+const act = (label, cls, fn) => { const b = el("button", cls, label); b.onclick = fn; return b; };
+const save = async (id, data) => { try { await setDoc(doc(db, "products", id), data); form = null; renderP(); } catch (e) { console.error(e); $("#fe") && ($("#fe").textContent = "تعذّر الحفظ (" + e.code + ")."); } };
+
+function renderP() {
+  $("#pform").classList.toggle("hide", !form); $("#plist").classList.toggle("hide", !!form);
+  if (form) return renderForm();
+  const L = $("#plist"); L.textContent = "";
+  L.append(act("+ إضافة منتج جديد", "", () => { form = { id: "p" + Date.now().toString(36), n: ["", "", ""], d: ["", "", ""], p: "", o: "", z: "S,M,L,XL,XXL", colors: [{ n: "", c: "#C6A17E", imgs: [] }], hidden: false }; renderP(); }));
+  L.append(el("p", "sub", "المنتجات المدمجة في الموقع (يمكن تعديل سعرها أو إخفاؤها)"));
+  BUILTIN.forEach(b => {
+    const ov = prods[b.id] || {}, full = !!prods[b.id] && !ov.builtin, c = el("div", "card"), r = el("div", "p"), t = el("div");
+    const im0 = full && ov.colors && ov.colors[0] && ov.colors[0].imgs[0];
+    if (im0) { const i = el("img"); i.src = im0; r.append(i); } else r.append(el("div", "ph", "✦"));
+    const h = el("h3", "", full ? (ov.n[2] || ov.n[0] || b.n) : b.n); if (ov.hidden) h.append(el("span", "badge", "مخفي"));
+    t.append(h, el("p", "m", money(ov.p || b.p))); r.append(t); c.append(r);
+    const a = el("div", "acts");
+    a.append(act("تعديل كل شيء", "ghost", async () => {
+      if (full) { form = JSON.parse(JSON.stringify({ ...ov, id: b.id, z: (ov.z || []).join(","), o: ov.o || "" })); return renderP(); }
+      try {
+        const d = (await loadBI())[b.id];
+        form = { id: b.id, n: [...d.n], d: [...d.d], p: ov.p || d.p, o: "o" in ov ? (ov.o || "") : (d.o || ""), z: d.z.join(","), colors: JSON.parse(JSON.stringify(d.colors)), hidden: !!ov.hidden };
+        renderP();
+      } catch (e) { console.error(e); $("#ae").textContent = "ملف builtin-products.json غير موجود في المستودع. ارفعيه ثم أعيدي المحاولة."; }
+    }),
+      act(ov.hidden ? "إظهار" : "إخفاء", "ghost", () => save(b.id, full ? { ...ov, hidden: !ov.hidden } : { builtin: true, p: ov.p || b.p, o: "o" in ov ? ov.o : (b.o || 0), hidden: !ov.hidden })),
+      act("حذف", "ghost danger", () => { if (confirm("حذف هذا المنتج من المتجر؟ (يمكنك إظهاره لاحقاً)")) save(b.id, { builtin: true, p: ov.p || b.p, o: 0, hidden: true }); }));
+    if (prods[b.id]) a.append(act("استرجاع الأصل", "ghost danger", () => { if (confirm("استرجاع المنتج كما كان أصلاً؟")) deleteDoc(doc(db, "products", b.id)); }));
+    c.append(a); L.append(c);
+  });
+  L.append(el("p", "sub", "المنتجات التي أضفتِها"));
+  const mine = Object.entries(prods).filter(([id, x]) => !x.builtin && !BUILTIN.some(b => b.id === id));
+  if (!mine.length) L.append(el("p", "empty", "لم تضيفي منتجات بعد."));
+  mine.forEach(([id, x]) => {
+    const c = el("div", "card"), r = el("div", "p"), t = el("div"), im = x.colors && x.colors[0] && x.colors[0].imgs[0];
+    if (im) { const i = el("img"); i.src = im; r.append(i); } else r.append(el("div", "ph", "✦"));
+    const h = el("h3", "", x.n[2] || x.n[0]); if (x.hidden) h.append(el("span", "badge", "مخفي")); t.append(h, el("p", "m", money(x.p))); r.append(t); c.append(r);
+    const a = el("div", "acts");
+    a.append(act("تعديل", "ghost", () => { form = JSON.parse(JSON.stringify({ ...x, id, z: (x.z || []).join(","), o: x.o || "" })); renderP(); }),
+      act(x.hidden ? "إظهار" : "إخفاء", "ghost", () => updateDoc(doc(db, "products", id), { hidden: !x.hidden })),
+      act("حذف", "ghost danger", () => { if (confirm("حذف هذا المنتج نهائياً؟")) deleteDoc(doc(db, "products", id)); }));
+    c.append(a); L.append(c);
+  });
+}
+
+function renderForm() {
+  const F = $("#pform"); F.textContent = "";
+  const inp = (label, key, type, idx) => { const l = el("label", "", label), i = el("input"); i.type = type || "text"; i.value = idx == null ? form[key] : form[key][idx]; i.oninput = () => { if (idx == null) form[key] = i.value; else form[key][idx] = i.value; }; F.append(l, i); };
+  F.append(el("h2", "", form.builtin ? "تعديل: " + form.name : (prods[form.id] ? "تعديل منتج" : "منتج جديد")));
+  if (!form.builtin) { inp("الاسم بالعربية", "n", "text", 2); inp("الاسم بالفرنسية (اختياري)", "n", "text", 0); inp("الاسم بالإنجليزية (اختياري)", "n", "text", 1); inp("الوصف بالعربية", "d", "text", 2); inp("الوصف بالفرنسية (اختياري)", "d", "text", 0); inp("الوصف بالإنجليزية (اختياري)", "d", "text", 1); }
+  inp("السعر (DZD)", "p", "number"); inp("السعر قبل التخفيض (اختياري، اتركيه فارغاً إن لم يوجد)", "o", "number");
+  if (!form.builtin) {
+    inp("المقاسات (مفصولة بفاصلة)", "z");
+    form.colors.forEach((c, k) => {
+      const b = el("div", "cb"), nm = el("input"), cl = el("input"), fi = el("input"), th = el("div", "th");
+      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; c.nn = null; };
+      const au = act("تحديد اللون واسمه تلقائياً من الصورة الأولى", "ghost", async () => { if (!c.imgs.length) { $("#fe").textContent = "أضيفي صورة أولاً."; return; } c.c = await dominant(c.imgs[0]); c.n = colorName(c.c); c.nn = null; renderForm(); });
+      cl.type = "color"; cl.value = c.c; cl.oninput = () => { c.c = cl.value; };
+      fi.type = "file"; fi.accept = "image/*"; fi.multiple = true;
+      fi.onchange = async () => { const first = !c.imgs.length; for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } if (first && c.imgs.length) { c.c = await dominant(c.imgs[0]); if (!c.n.trim()) { c.n = colorName(c.c); c.nn = null; } } renderForm(); };
+      c.imgs.forEach((src, j) => { const w = el("div"), i = el("img"), x = el("b", "", "×"); i.src = src; x.onclick = () => { c.imgs.splice(j, 1); renderForm(); }; w.append(i, x); th.append(w); });
+      b.append(el("label", "", "اللون " + (k + 1) + " (يُحدَّد تلقائياً من أول صورة، ويمكنك تغييره)"), nm, cl, au, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
+      if (form.colors.length > 1) b.append(act("حذف هذا اللون", "ghost danger", () => { form.colors.splice(k, 1); renderForm(); }));
+      F.append(b);
+    });
+    F.append(act("+ لون آخر", "ghost", () => { form.colors.push({ n: "", c: "#C6A17E", imgs: [] }); renderForm(); }));
+  }
+  F.append(el("p", "err")); F.lastChild.id = "fe";
+  const row = el("div", "acts");
+  row.append(act("حفظ", "", saveForm), act("إلغاء", "ghost", () => { form = null; renderP(); }));
+  F.append(row);
+}
+
+function saveForm() {
+  const f = form, p = Number(f.p), o = Number(f.o) || 0, err = m => { $("#fe").textContent = m; };
+  if (!(p > 0)) return err("اكتبي سعراً صحيحاً.");
+  if (o && o <= p) return err("السعر قبل التخفيض يجب أن يكون أكبر من السعر الحالي.");
+  if (f.builtin) return save(f.id, { builtin: true, p, o, hidden: !!f.hidden });
+  const first = a => a.find(x => x.trim()) || "";
+  if (!first(f.n)) return err("اكتبي اسم المنتج.");
+  const n = f.n.map(x => x.trim() || first(f.n).trim()), d = f.d.map(x => x.trim() || first(f.d).trim());
+  const colors = f.colors.map(c => ({ n: c.n.trim() || "—", c: c.c, imgs: c.imgs, ...(c.nn ? { nn: c.nn } : {}) })).filter(c => c.imgs.length);
+  if (!colors.length) return err("أضيفي صورة واحدة على الأقل.");
+  const z = f.z.split(",").map(x => x.trim()).filter(Boolean);
+  const data = { n, d, p, o, z, colors, hidden: !!f.hidden, createdAt: f.createdAt || Date.now() };
+  if (JSON.stringify(data).length > 950000) return err("الصور كبيرة جداً. قلّلي عدد الصور (الحد حوالي 20 صورة صغيرة للمنتج).");
+  $("#fe").textContent = "جارٍ الحفظ…"; save(f.id, data);
+}
+
+/* ---------- Statistics ---------- */
+function renderS() {
+  const P = $("#ps"); P.textContent = "";
+  const live = orders.filter(o => o.status !== "cancelled"), sum = a => a.reduce((s, o) => s + Number(o.total || 0), 0);
+  const rv = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) + " ★" : "—";
+  const g = el("div", "stats");
+  [[money(sum(live)), "إجمالي المبيعات"], [orders.length, "عدد الطلبيات"], [live.length ? money(Math.round(sum(live) / live.length)) : "—", "متوسط قيمة الطلبية"], [orders.filter(o => o.status === "delivered").length, "طلبيات مسلّمة"], [orders.filter(o => o.status === "cancelled").length, "طلبيات ملغاة"], [rv, "متوسط التقييم (" + reviews.length + ")"]].forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); g.append(b); });
+  P.append(g);
+  const days = [], now = new Date();
+  for (let i = 13; i >= 0; i--) { const d = new Date(now); d.setDate(d.getDate() - i); days.push({ k: d.toDateString(), l: d.getDate() + "/" + (d.getMonth() + 1), v: 0 }); }
+  live.forEach(o => { const d = o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString(), x = days.find(y => y.k === d); if (x) x.v += Number(o.total || 0); });
+  const mx = Math.max(1, ...days.map(d => d.v)), box = el("div", "card"), ch = el("div");
+  box.append(el("p", "sub", "المبيعات في آخر 14 يوماً"));
+  ch.style.cssText = "display:flex;align-items:flex-end;gap:4px;direction:ltr";
+  days.forEach(d => { const c = el("div"), b = el("div"); c.style.cssText = "flex:1;text-align:center;font-size:10px;color:var(--mut);display:flex;flex-direction:column;justify-content:flex-end;height:120px"; b.style.cssText = "background:var(--gd);border-radius:6px 6px 0 0;margin-bottom:3px;height:" + Math.max(2, Math.round(d.v / mx * 90)) + "px"; c.append(b, el("div", "", d.l)); ch.append(c); });
+  box.append(ch); P.append(box);
+  const tp = {}; live.forEach(o => (o.lines || []).forEach(l => { const k = l.n || l.g; (tp[k] = tp[k] || { q: 0, r: 0 }); tp[k].q += l.q || 1; tp[k].r += (l.p || 0) * (l.q || 1); }));
+  const top = Object.entries(tp).sort((a, b) => b[1].q - a[1].q).slice(0, 6), tb = el("div", "card");
+  tb.append(el("p", "sub", "المنتجات الأكثر مبيعاً (من الطلبيات المسجّلة بتفاصيلها)"));
+  if (!top.length) tb.append(el("p", "m", "لا توجد بيانات بعد."));
+  top.forEach(([n, v]) => { const r = el("div", "row"); r.append(el("span", "", n), el("span", "m", v.q + " قطعة · " + money(v.r))); tb.append(r); });
+  P.append(tb);
+}
+
+/* ---------- Promotions ---------- */
+const prodList = () => [...BUILTIN.map(b => [b.id, (prods[b.id] && !prods[b.id].builtin && prods[b.id].n && prods[b.id].n[2]) || b.n]), ...Object.entries(prods).filter(([id, x]) => !x.builtin && !BUILTIN.some(b => b.id === id)).map(([id, x]) => [id, x.n[2] || x.n[0]])];
+const fmtD = ms => ms ? new Date(ms).toLocaleDateString("fr-FR") : "—";
+function renderPr() {
+  const P = $("#pr"); P.textContent = "";
+  if (pform) return renderPf(P);
+  P.append(act("+ إنشاء عرض جديد", "", () => { pform = { id: "o" + Date.now().toString(36), name: "", type: "pct", value: "", all: true, products: [], start: "", end: "", active: true }; renderPr(); }));
+  P.append(el("p", "sub", "الخصم يُطبَّق تلقائياً على السعر في المتجر والسلة والطلب. إن تداخلت عدة عروض على منتج واحد يُطبَّق الأكبر فقط."));
+  const list = Object.entries(promos);
+  if (!list.length) P.append(el("p", "empty", "لا توجد عروض بعد."));
+  const now = Date.now();
+  list.forEach(([id, x]) => {
+    const st = !x.active ? "متوقف" : x.end && now > x.end + 86399999 ? "منتهٍ" : x.start && now < x.start ? "لم يبدأ" : "نشط";
+    const c = el("div", "card"), h3 = el("h3", "", x.name); h3.append(el("span", "badge", st));
+    const names = x.all ? "كل المنتجات" : (x.products || []).map(i => (prodList().find(p => p[0] === i) || [0, i])[1]).join("، ");
+    c.append(h3, el("p", "m", (x.type === "pct" ? "-" + x.value + "%" : "-" + money(x.value)) + " · " + names), el("p", "m", fmtD(x.start) + " ← " + fmtD(x.end)));
+    const a = el("div", "acts");
+    a.append(act("تعديل", "ghost", () => { pform = { ...x, id, start: x.start ? new Date(x.start).toISOString().slice(0, 10) : "", end: x.end ? new Date(x.end).toISOString().slice(0, 10) : "", products: [...(x.products || [])] }; renderPr(); }),
+      act(x.active ? "إيقاف" : "تفعيل", "ghost", () => updateDoc(doc(db, "promos", id), { active: !x.active })),
+      act("حذف", "ghost danger", () => { if (confirm("حذف هذا العرض؟")) deleteDoc(doc(db, "promos", id)); }));
+    c.append(a); P.append(c);
+  });
+}
+function renderPf(P) {
+  const f = pform, F = el("div", "box fm");
+  const inp = (label, key, type) => { const i = el("input"); i.type = type || "text"; i.value = f[key]; i.oninput = () => { f[key] = i.value; }; F.append(el("label", "", label), i); };
+  F.append(el("h2", "", "عرض / تخفيض"));
+  inp("اسم العرض", "name");
+  const sel = el("select"); [["pct", "نسبة مئوية %"], ["fixed", "مبلغ ثابت (DZD)"]].forEach(([v, l]) => { const o = el("option", "", l); o.value = v; sel.append(o); }); sel.value = f.type; sel.onchange = () => { f.type = sel.value; };
+  F.append(el("label", "", "نوع الخصم"), sel); inp("قيمة الخصم", "value", "number");
+  const all = el("input"); all.type = "checkbox"; all.checked = f.all; all.style.width = "auto"; all.onchange = () => { f.all = all.checked; renderPr(); };
+  const l1 = el("label", "", " كل المنتجات"); l1.prepend(all); F.append(l1);
+  if (!f.all) prodList().forEach(([id, n]) => { const c = el("input"); c.type = "checkbox"; c.style.width = "auto"; c.checked = f.products.includes(id); c.onchange = () => { f.products = c.checked ? [...f.products, id] : f.products.filter(x => x !== id); }; const l = el("label", "", " " + n); l.prepend(c); F.append(l); });
+  inp("تاريخ البداية (اختياري)", "start", "date"); inp("تاريخ النهاية (اختياري)", "end", "date");
+  const ac = el("input"); ac.type = "checkbox"; ac.checked = f.active; ac.style.width = "auto"; ac.onchange = () => { f.active = ac.checked; };
+  const l2 = el("label", "", " العرض مفعّل"); l2.prepend(ac); F.append(l2);
+  const er = el("p", "err"); F.append(er);
+  const row = el("div", "acts");
+  row.append(act("حفظ", "", async () => {
+    const v = Number(f.value);
+    if (!f.name.trim()) return er.textContent = "اكتبي اسم العرض.";
+    if (!(v > 0) || (f.type === "pct" && v > 95)) return er.textContent = "قيمة الخصم غير صحيحة (النسبة حتى 95%).";
+    if (!f.all && !f.products.length) return er.textContent = "اختاري منتجاً واحداً على الأقل.";
+    const s = f.start ? new Date(f.start + "T00:00:00").getTime() : 0, e = f.end ? new Date(f.end + "T00:00:00").getTime() : 0;
+    if (s && e && e < s) return er.textContent = "تاريخ النهاية قبل البداية.";
+    try { await setDoc(doc(db, "promos", f.id), { name: f.name.trim(), type: f.type, value: v, all: !!f.all, products: f.all ? [] : f.products, start: s, end: e, active: !!f.active, createdAt: f.createdAt || Date.now() }); pform = null; renderPr(); }
+    catch (x) { console.error(x); er.textContent = "تعذّر الحفظ (" + x.code + ")."; }
+  }), act("إلغاء", "ghost", () => { pform = null; renderPr(); }));
+  F.append(row); P.append(F);
+}
+
+/* ---------- Reviews ---------- */
+function renderV() {
+  const P = $("#pv"); P.textContent = "";
+  P.append(el("p", "sub", reviews.length ? "عدد التقييمات: " + reviews.length + " · المتوسط: " + (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) + " من 5" : "لا توجد تقييمات بعد. تظهر هنا حين تقيّم الزبونة طلبيتها."));
+  reviews.forEach(r => {
+    const c = el("div", "card"), row = el("div", "row");
+    const st = el("span", "", "★".repeat(r.rating) + "☆".repeat(5 - r.rating)); st.style.color = "var(--gold)"; st.style.fontSize = "20px";
+    row.append(st, el("span", "date", r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleDateString("fr-FR") : ""));
+    c.append(row);
+    if (r.comment) c.append(el("p", "", r.comment));
+    c.append(el("p", "m", [r.name, r.ref, r.products].filter(Boolean).join(" · ")));
+    const a = el("div", "acts"); a.append(act("حذف", "ghost danger", () => { if (confirm("حذف هذا التقييم؟")) deleteDoc(doc(db, "reviews", r.id)); })); c.append(a); P.append(c);
+  });
+}
+</script>
+</body>
+</html>
