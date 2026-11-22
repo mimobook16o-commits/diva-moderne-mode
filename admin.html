@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#21142B">
 <meta name="color-scheme" content="dark">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Jost:wght@300;400;500&family=Tajawal:wght@300;400;500&display=swap" rel="stylesheet">
 <title>لوحة التحكم · Diva Moderne Mode</title>
 <style>
@@ -64,6 +64,62 @@ a{color:var(--gold)}
 .ln img{width:58px;height:72px;object-fit:cover;border-radius:12px;flex:none}.ln .ph{width:58px;height:72px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);flex:none}
 .ln div{font-size:14px;line-height:1.4}.ln small{color:var(--mut)}
 .sw{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);vertical-align:middle;margin-inline-end:6px}
+
+/* ---- polish layer ---- */
+html{scroll-behavior:smooth}
+::selection{background:var(--berry);color:#fff}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button:active{transform:scale(.97);transition-duration:.1s}
+@keyframes tabIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+#po:not(.hide),#pp:not(.hide),#ps:not(.hide),#pr:not(.hide),#pv:not(.hide),#pt:not(.hide){animation:tabIn .35s cubic-bezier(.2,.7,.2,1) backwards}
+.card,.sb,.box{animation:cardIn .45s cubic-bezier(.2,.7,.2,1) backwards}
+.card:nth-child(2),.sb:nth-child(2){animation-delay:.04s}.card:nth-child(3),.sb:nth-child(3){animation-delay:.08s}.card:nth-child(4),.sb:nth-child(4){animation-delay:.12s}.card:nth-child(5),.sb:nth-child(5){animation-delay:.16s}.card:nth-child(n+6),.sb:nth-child(n+6){animation-delay:.2s}
+.card{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.card:hover{border-color:var(--gold);box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.chip{transition:background .25s ease,color .25s ease,border-color .25s ease}
+.tabs{position:sticky;top:0;z-index:8;background:linear-gradient(var(--plum),rgba(33,20,43,.92));backdrop-filter:blur(10px);padding:8px 0}
+.sk{height:150px;border-radius:24px;margin-bottom:14px;background:linear-gradient(100deg,rgba(60,31,68,.5) 30%,rgba(198,161,126,.18) 50%,rgba(60,31,68,.5) 70%);background-size:220% 100%;animation:skl 1.3s linear infinite}
+@keyframes skl{to{background-position:-220% 0}}
+@media (min-width:900px){main{max-width:980px}#list{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}#list .card{margin:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ===== luxe layer ===== */
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important;font-weight:400}
+::selection{background:var(--berry);color:#fff}
+.brand b{background:var(--gd);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 7s linear infinite}
+@keyframes sh{to{background-position:-220% 0}}
+.brand{animation:up .7s cubic-bezier(.22,.8,.2,1) both}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#po,#pp,#ps,#pr,#pv,#pt{animation:up .45s cubic-bezier(.22,.8,.2,1) both}
+.box,.card,.sb{box-shadow:0 10px 34px rgba(0,0,0,.28);transition:transform .4s cubic-bezier(.22,.8,.2,1),border-color .3s,box-shadow .4s}
+.card:hover,.sb:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 18px 44px rgba(0,0,0,.38),0 0 30px rgba(207,117,149,.12)}
+.card{animation:up .5s cubic-bezier(.22,.8,.2,1) both;position:relative;overflow:hidden}
+.card[data-st]::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:4px;background:var(--st,var(--gold))}
+.card[data-st=new]{--st:#CF7595}.card[data-st=confirmed]{--st:#C6A17E}.card[data-st=shipped]{--st:#9B7BC1}.card[data-st=delivered]{--st:#7DDC9F}.card[data-st=cancelled]{--st:#6e6a73;opacity:.8}
+.sb b{font-size:28px;letter-spacing:.02em;background:var(--gd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stats .sb{animation:up .5s both}.stats .sb:nth-child(2){animation-delay:.05s}.stats .sb:nth-child(3){animation-delay:.1s}.stats .sb:nth-child(4){animation-delay:.15s}.stats .sb:nth-child(5){animation-delay:.2s}.stats .sb:nth-child(6){animation-delay:.25s}
+input,select,textarea{transition:border-color .3s,box-shadow .3s,background .3s}
+input:focus,select:focus{box-shadow:0 0 0 3px rgba(198,161,126,.2);background:rgba(33,20,43,.92)}
+button{transition:transform .35s cubic-bezier(.22,.8,.2,1),box-shadow .35s,background-position .6s}
+button:active{transform:scale(.96)}
+.chips{scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{transition:all .3s}.chip:hover{border-color:var(--gold)}
+.ln{transition:background .3s}.ln:hover{background:rgba(198,161,126,.07)}
+.bar{position:sticky;top:0;z-index:20;margin:0 -16px;padding:12px 16px;background:rgba(33,20,43,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar h1{margin:0;font-size:21px}
+.empty{padding:48px 0}.empty::before{content:"✦";display:block;color:var(--gold);font-size:22px;margin-bottom:8px;opacity:.7}
+/* app-style bottom navigation */
+.tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;margin:0;padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:2px;justify-content:space-around;overflow:visible;background:rgba(33,20,43,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.tabs .chip{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:14px;padding:6px 2px;font-size:11px;color:var(--mut);background:transparent;position:relative}
+.tabs .chip svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s cubic-bezier(.22,.8,.2,1)}
+.tabs .chip.on{background:rgba(198,161,126,.14);color:var(--champ);font-weight:500}
+.tabs .chip.on svg{transform:translateY(-2px) scale(1.12)}
+.tabs .chip[data-n]::after{content:attr(data-n);position:absolute;top:2px;inset-inline-end:calc(50% - 22px);background:var(--berry);color:#fff;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center;padding:0 4px;animation:pop .6s}
+@keyframes pop{40%{transform:scale(1.6)}}
+@media(min-width:760px){main{max-width:820px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -84,7 +140,7 @@ a{color:var(--gold)}
     <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
     <div class="tabs"><button class="chip on" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button><button class="chip" id="tS">الإحصائيات</button><button class="chip" id="tR">العروض</button><button class="chip" id="tV">التقييمات</button><button class="chip" id="tT">الإعدادات</button></div>
     <p class="err" id="ae"></p>
-    <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"></div></div>
+    <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div>
     <div id="ps" class="hide"></div><div id="pr" class="hide"></div><div id="pv" class="hide"></div><div id="pt" class="hide"></div>
     <div id="pp" class="hide"><div id="plist"></div><div id="pform" class="box fm hide"></div></div>
   </section>
@@ -107,7 +163,7 @@ const db = getFirestore(app);
 const $ = s => document.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const STATUS = { new: "جديد", confirmed: "مؤكَّد", shipped: "قيد الشحن", delivered: "تم التسليم", cancelled: "ملغى" };
-let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null, promos = {}, reviews = [], pform = null, unsubX = [], settings = {}, firstSnap = {}, bumpT = null;
+let orders = [], filter = "all", unsub = null, unsubP = null, prods = {}, form = null, promos = {}, reviews = [], pform = null, unsubX = [], settings = {}, firstSnap = {}, bumpT = null, pcol = {};
 
 const loginMsg = code => ({
   "auth/invalid-credential": "البريد أو كلمة المرور غير صحيحة.",
@@ -134,6 +190,7 @@ onAuthStateChanged(auth, user => {
   if (!user) { orders = []; $("#pw").value = ""; return; }
   const fail = n => err => { console.error(err); $("#ae").textContent = "تعذّر تحميل " + n + " (" + err.code + "). الصقي القواعد الجديدة في Firestore."; };
   unsubX.push(onSnapshot(collection(db, "promos"), snap => { promos = {}; snap.docs.forEach(d => { promos[d.id] = d.data(); }); bump("promos"); renderPr(); }, fail("العروض")));
+  unsubX.push(onSnapshot(collection(db, "pcolors"), snap => { pcol = {}; snap.docs.forEach(d => { pcol[d.id] = d.data().imgs || []; }); renderP(); }, fail("صور الألوان")));
   unsubX.push(onSnapshot(doc(db, "settings", "main"), snap => { settings = snap.exists() ? snap.data() : {}; bump("settings"); renderT(); }, fail("الإعدادات")));
   unsubX.push(onSnapshot(collection(db, "reviews"), snap => { reviews = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((b.createdAt && b.createdAt.seconds) || 0) - ((a.createdAt && a.createdAt.seconds) || 0)); renderV(); renderS(); }, fail("التقييمات")));
   unsubP = onSnapshot(collection(db, "products"), snap => { prods = {}; snap.docs.forEach(d => { prods[d.id] = d.data(); }); bump("products"); renderP(); }, err => { console.error(err); $("#ae").textContent = "تعذّر تحميل المنتجات (" + err.code + "). تأكد من لصق القواعد الجديدة."; });
@@ -150,10 +207,10 @@ onAuthStateChanged(auth, user => {
 function render() {
   const counts = { all: orders.length };
   orders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
-  $("#cnt").textContent = orders.length + " طلبية";
+  $("#cnt").textContent = orders.length + " طلبية"; { const nw = orders.filter(o => o.status === "new").length; if (nw) $("#tO").dataset.n = nw; else delete $("#tO").dataset.n; }
   const today = new Date().toDateString(), live = orders.filter(o => o.status !== "cancelled");
   const st = [[orders.filter(o => o.status === "new").length, "طلبيات جديدة"], [orders.filter(o => o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString() === today).length, "طلبيات اليوم"], [orders.length, "كل الطلبيات"], [money(live.reduce((a, o) => a + Number(o.total || 0), 0)), "المبيعات (بدون الملغاة)"]];
-  $("#stats").textContent = ""; st.forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); $("#stats").append(b); });
+  $("#stats").textContent = ""; st.forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); $("#stats").append(b); }); animStats($("#stats"));
   const chips = $("#chips"); chips.textContent = "";
   [["all", "الكل"], ...Object.entries(STATUS)].forEach(([k, label]) => {
     const b = el("button", "chip" + (filter === k ? " on" : ""), label + " (" + (counts[k] || 0) + ")");
@@ -168,7 +225,7 @@ function render() {
 }
 
 function card(o) {
-  const c = el("div", "card");
+  const c = el("div", "card"); c.dataset.st = o.status || "new";
   const r = el("div", "row");
   r.append(el("span", "ref", o.ref || o.id));
   const when = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "";
@@ -204,7 +261,7 @@ function card(o) {
 }
 
 /* ---------- Products ---------- */
-const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 4200 }];
+const BUILTIN = [{ id: "ab", n: "عباية إيكلا", p: 5200 }, { id: "tr", n: "ثلاثية إيكلا", p: 13100, o: 15600 }, { id: "po", n: "البونشو الوردي", p: 3500 }, { id: "sa", n: "فستان ساتان مرصّع", p: 4200 }, { id: "kb", n: "جبة قبائلية مخمل", p: 4000 }];
 let BI = null;
 const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.json", { cache: "no-store" }); if (!r.ok) throw new Error("missing"); BI = await r.json(); } return BI; };
 const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
@@ -222,20 +279,20 @@ function renderP() {
   $("#pform").classList.toggle("hide", !form); $("#plist").classList.toggle("hide", !!form);
   if (form) return renderForm();
   const L = $("#plist"); L.textContent = "";
-  L.append(act("+ إضافة منتج جديد", "", () => { form = { id: "p" + Date.now().toString(36), n: ["", "", ""], d: ["", "", ""], p: "", o: "", z: "S,M,L,XL,XXL", colors: [{ n: "", c: "#C6A17E", imgs: [] }], hidden: false }; renderP(); }));
+  L.append(act("+ إضافة منتج جديد", "", () => { form = { id: "p" + Date.now().toString(36), n: ["", "", ""], d: ["", "", ""], p: "", o: "", z: "S,M,L,XL,XXL", colors: [{ n: "", c: "#C6A17E", imgs: [] }], hidden: false, ord: "", sp: false, fd: false, fh: false }; renderP(); }));
   L.append(el("p", "sub", "المنتجات المدمجة في الموقع (يمكن تعديل سعرها أو إخفاؤها)"));
   BUILTIN.forEach(b => {
     const ov = prods[b.id] || {}, full = !!prods[b.id] && !ov.builtin, c = el("div", "card"), r = el("div", "p"), t = el("div");
-    const im0 = full && ov.colors && ov.colors[0] && ov.colors[0].imgs[0];
+    const im0 = full && ov.colors && ov.colors[0] && ((ov.colors[0].imgs && ov.colors[0].imgs[0]) || (pcol[b.id + "_0"] || [])[0]);
     if (im0) { const i = el("img"); i.src = im0; r.append(i); } else r.append(el("div", "ph", "✦"));
     const h = el("h3", "", full ? (ov.n[2] || ov.n[0] || b.n) : b.n); if (ov.hidden) h.append(el("span", "badge", "مخفي"));
     t.append(h, el("p", "m", money(ov.p || b.p))); r.append(t); c.append(r);
     const a = el("div", "acts");
     a.append(act("تعديل كل شيء", "ghost", async () => {
-      if (full) { form = JSON.parse(JSON.stringify({ ...ov, id: b.id, z: (ov.z || []).join(","), o: ov.o || "" })); return renderP(); }
+      if (full) { let d = null; try { d = (await loadBI())[b.id]; } catch (_) {} form = JSON.parse(JSON.stringify({ ...withImgs(b.id, ov), id: b.id, z: (ov.z || []).join(","), o: ov.o || "", ord: ov.ord ?? (d ? d.ord : ""), sp: ov.sp ?? (d ? !!d.sp : false), fd: ov.fd ?? (d ? !!d.fd : false), fh: ov.fh ?? (d ? !!d.fh : false) })); return renderP(); }
       try {
         const d = (await loadBI())[b.id];
-        form = { id: b.id, n: [...d.n], d: [...d.d], p: ov.p || d.p, o: "o" in ov ? (ov.o || "") : (d.o || ""), z: d.z.join(","), colors: JSON.parse(JSON.stringify(d.colors)), hidden: !!ov.hidden };
+        form = { id: b.id, n: [...d.n], d: [...d.d], p: ov.p || d.p, o: "o" in ov ? (ov.o || "") : (d.o || ""), z: d.z.join(","), colors: JSON.parse(JSON.stringify(d.colors)).map(c => ({ ...c, man: true })), hidden: !!ov.hidden, ord: d.ord ?? "", sp: !!d.sp, fd: !!d.fd, fh: !!d.fh };
         renderP();
       } catch (e) { console.error(e); $("#ae").textContent = "ملف builtin-products.json غير موجود في المستودع. ارفعيه ثم أعيدي المحاولة."; }
     }),
@@ -248,13 +305,13 @@ function renderP() {
   const mine = Object.entries(prods).filter(([id, x]) => !x.builtin && !BUILTIN.some(b => b.id === id));
   if (!mine.length) L.append(el("p", "empty", "لم تضيفي منتجات بعد."));
   mine.forEach(([id, x]) => {
-    const c = el("div", "card"), r = el("div", "p"), t = el("div"), im = x.colors && x.colors[0] && x.colors[0].imgs[0];
+    const c = el("div", "card"), r = el("div", "p"), t = el("div"), im = x.colors && x.colors[0] && ((x.colors[0].imgs && x.colors[0].imgs[0]) || (pcol[id + "_0"] || [])[0]);
     if (im) { const i = el("img"); i.src = im; r.append(i); } else r.append(el("div", "ph", "✦"));
     const h = el("h3", "", x.n[2] || x.n[0]); if (x.hidden) h.append(el("span", "badge", "مخفي")); t.append(h, el("p", "m", money(x.p))); r.append(t); c.append(r);
     const a = el("div", "acts");
-    a.append(act("تعديل", "ghost", () => { form = JSON.parse(JSON.stringify({ ...x, id, z: (x.z || []).join(","), o: x.o || "" })); renderP(); }),
+    a.append(act("نسخ", "ghost", () => { form = JSON.parse(JSON.stringify({ ...withImgs(id, x), id: "p" + Date.now().toString(36), z: (x.z || []).join(","), o: x.o || "", createdAt: null })); renderP(); }), act("تعديل", "ghost", () => { form = JSON.parse(JSON.stringify({ ...withImgs(id, x), id, z: (x.z || []).join(","), o: x.o || "" })); renderP(); }),
       act(x.hidden ? "إظهار" : "إخفاء", "ghost", () => updateDoc(doc(db, "products", id), { hidden: !x.hidden })),
-      act("حذف", "ghost danger", () => { if (confirm("حذف هذا المنتج نهائياً؟")) deleteDoc(doc(db, "products", id)); }));
+      act("حذف", "ghost danger", () => { if (confirm("حذف هذا المنتج نهائياً؟")) { deleteDoc(doc(db, "products", id)); (x.colors || []).forEach((_, i) => deleteDoc(doc(db, "pcolors", id + "_" + i))); } }));
     c.append(a); L.append(c);
   });
 }
@@ -267,14 +324,16 @@ function renderForm() {
   inp("السعر (DZD)", "p", "number"); inp("السعر قبل التخفيض (اختياري، اتركيه فارغاً إن لم يوجد)", "o", "number");
   if (!form.builtin) {
     inp("المقاسات (مفصولة بفاصلة)", "z");
+    inp("ترتيب الظهور في المتجر (الرقم الأصغر أولاً، وفارغ = بعد الباقي)", "ord", "number");
+    [["sp", " شارة «عرض خاص» على بطاقة المنتج"], ["fd", " التوصيل للمكتب (Stop Desk) مجاني لهذا المنتج"], ["fh", " التوصيل للمنزل مجاني لهذا المنتج"]].forEach(([k, label]) => { const c = el("input"); c.type = "checkbox"; c.checked = !!form[k]; c.style.width = "auto"; c.onchange = () => { form[k] = c.checked; }; const l = el("label", "", label); l.prepend(c); F.append(l); });
     form.colors.forEach((c, k) => {
       const b = el("div", "cb"), nm = el("input"), cl = el("input"), fi = el("input"), th = el("div", "th");
-      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; c.nn = null; };
-      const au = act("تحديد اللون واسمه تلقائياً من الصورة الأولى", "ghost", async () => { if (!c.imgs.length) { $("#fe").textContent = "أضيفي صورة أولاً."; return; } c.c = await dominant(c.imgs[0]); c.n = colorName(c.c); c.nn = null; renderForm(); });
+      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; c.nn = null; c.man = true; };
+      const au = act("تحديد اللون واسمه تلقائياً من الصورة الأولى", "ghost", async () => { if (!c.imgs.length) { $("#fe").textContent = "أضيفي صورة أولاً."; return; } c.man = false; await autoColor(c); renderForm(); });
       cl.type = "color"; cl.value = c.c; cl.oninput = () => { c.c = cl.value; };
       fi.type = "file"; fi.accept = "image/*"; fi.multiple = true;
-      fi.onchange = async () => { const first = !c.imgs.length; for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } if (first && c.imgs.length) { c.c = await dominant(c.imgs[0]); if (!c.n.trim()) { c.n = colorName(c.c); c.nn = null; } } renderForm(); };
-      c.imgs.forEach((src, j) => { const w = el("div"), i = el("img"), x = el("b", "", "×"); i.src = src; x.onclick = () => { c.imgs.splice(j, 1); renderForm(); }; w.append(i, x); th.append(w); });
+      fi.onchange = async () => { const first = !c.imgs.length; for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } if (!c.man && c.imgs.length) await autoColor(c); renderForm(); };
+      c.imgs.forEach((src, j) => { const w = el("div"), i = el("img"), x = el("b", "", "×"); i.src = src; x.onclick = async () => { c.imgs.splice(j, 1); if (!c.man && c.imgs.length) await autoColor(c); renderForm(); }; w.append(i, x); th.append(w); });
       b.append(el("label", "", "اللون " + (k + 1) + " (يُحدَّد تلقائياً من أول صورة، ويمكنك تغييره)"), nm, cl, au, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
       if (form.colors.length > 1) b.append(act("حذف هذا اللون", "ghost danger", () => { form.colors.splice(k, 1); renderForm(); }));
       F.append(b);
@@ -298,14 +357,22 @@ async function saveForm() {
   const colors = f.colors.map(c => ({ n: c.n.trim() || "—", c: c.c, imgs: c.imgs, ...(c.nn ? { nn: c.nn } : {}) })).filter(c => c.imgs.length);
   if (!colors.length) return err("أضيفي صورة واحدة على الأقل.");
   const z = f.z.split(",").map(x => x.trim()).filter(Boolean);
-  const data = { n, d, p, o, z, colors, hidden: !!f.hidden, createdAt: f.createdAt || Date.now() };
-  for (const [mx, q] of [[600, .55], [500, .5], [420, .45], [340, .4]]) {
-    if (JSON.stringify(data).length <= 980000) break;
-    $("#fe").textContent = "جارٍ ضغط الصور لتتسع في المنتج…";
-    for (const c of data.colors) c.imgs = await Promise.all(c.imgs.map(s => reshrink(s, mx, q)));
-  }
-  if (JSON.stringify(data).length > 980000) return err("الصور كثيرة جداً حتى بعد الضغط التلقائي. احذفي بعضها.");
-  $("#fe").textContent = "جارٍ الحفظ…"; save(f.id, data);
+  const meta = { n, d, p, o, z, colors: colors.map(({ imgs, man, ...c }) => ({ ...c, cnt: imgs.length })), hidden: !!f.hidden, sp: !!f.sp, fd: !!f.fd, fh: !!f.fh, ord: f.ord === "" || f.ord == null ? null : Number(f.ord), createdAt: f.createdAt || Date.now() };
+  try {
+    $("#fe").textContent = "جارٍ الحفظ…";
+    for (let i = 0; i < colors.length; i++) {
+      let imgs = colors[i].imgs;
+      for (const [mx, q] of [[700, .6], [600, .55], [500, .5], [420, .45], [340, .4], [280, .35]]) {
+        if (JSON.stringify(imgs).length <= 960000) break;
+        $("#fe").textContent = "جارٍ ضغط صور اللون " + (i + 1) + " تلقائياً…";
+        imgs = await Promise.all(imgs.map(s => reshrink(s, mx, q)));
+      }
+      await setDoc(doc(db, "pcolors", f.id + "_" + i), { pid: f.id, i, imgs });
+    }
+    const old = prods[f.id] && prods[f.id].colors ? prods[f.id].colors.length : 0;
+    for (let i = colors.length; i < old; i++) await deleteDoc(doc(db, "pcolors", f.id + "_" + i));
+    await save(f.id, meta);
+  } catch (e) { console.error(e); err("تعذّر الحفظ (" + (e.code || e.message) + ")."); }
 }
 
 /* ---------- Statistics ---------- */
@@ -315,7 +382,7 @@ function renderS() {
   const rv = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) + " ★" : "—";
   const g = el("div", "stats");
   [[money(sum(live)), "إجمالي المبيعات"], [orders.length, "عدد الطلبيات"], [live.length ? money(Math.round(sum(live) / live.length)) : "—", "متوسط قيمة الطلبية"], [orders.filter(o => o.status === "delivered").length, "طلبيات مسلّمة"], [orders.filter(o => o.status === "cancelled").length, "طلبيات ملغاة"], [rv, "متوسط التقييم (" + reviews.length + ")"]].forEach(([v, l]) => { const b = el("div", "sb"); b.append(el("b", "", String(v)), el("span", "", l)); g.append(b); });
-  P.append(g);
+  P.append(g); animStats(g);
   const days = [], now = new Date();
   for (let i = 13; i >= 0; i--) { const d = new Date(now); d.setDate(d.getDate() - i); days.push({ k: d.toDateString(), l: d.getDate() + "/" + (d.getMonth() + 1), v: 0 }); }
   live.forEach(o => { const d = o.createdAt && o.createdAt.toDate && o.createdAt.toDate().toDateString(), x = days.find(y => y.k === d); if (x) x.v += Number(o.total || 0); });
@@ -333,6 +400,8 @@ function renderS() {
 }
 
 /* ---------- Promotions ---------- */
+const withImgs = (id, x) => ({ ...x, colors: (x.colors || []).map((c, i) => ({ ...c, man: true, imgs: c.imgs && c.imgs.length ? c.imgs : (pcol[id + "_" + i] || []) })) });
+const autoColor = async c => { if (!c.imgs.length) return; c.c = await dominant(c.imgs[0]); c.n = colorName(c.c); c.nn = null; };
 const prodList = () => [...BUILTIN.map(b => [b.id, (prods[b.id] && !prods[b.id].builtin && prods[b.id].n && prods[b.id].n[2]) || b.n]), ...Object.entries(prods).filter(([id, x]) => !x.builtin && !BUILTIN.some(b => b.id === id)).map(([id, x]) => [id, x.n[2] || x.n[0]])];
 const fmtD = ms => ms ? new Date(ms).toLocaleDateString("fr-FR") : "—";
 function renderPr() {
@@ -416,6 +485,24 @@ function renderT() {
   }));
   P.append(box);
 }
+
+/* numbers count up when they change */
+const lastStat = {};
+function animStats(box) {
+  box.querySelectorAll(".sb").forEach(sb => {
+    const b = sb.querySelector("b"), label = sb.querySelector("span").textContent, txt = b.textContent;
+    if (lastStat[label] === txt) return; lastStat[label] = txt;
+    const m = txt.match(/^([\d\s\u202f\u00a0.,]+)(.*)$/), to = m ? Number(m[1].replace(/\D/g, "")) : 0;
+    if (!to || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t0 = performance.now(), suf = m[2];
+    const step = t => { const k = Math.min(1, (t - t0) / 700), e = 1 - Math.pow(1 - k, 3); b.textContent = Math.round(to * e).toLocaleString("fr-FR") + suf; if (k < 1) requestAnimationFrame(step); else b.textContent = txt; };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ---------- luxe layer: tab icons, status colours, new-order badge ---------- */
+const ICON = { tO: '<path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>', tP: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>', tS: '<path d="M5 20V10M12 20V4M19 20v-7"/>', tR: '<path d="M20 12l-8 8-9-9V4h7l10 8z"/><circle cx="8" cy="8" r="1.2"/>', tV: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/>', tT: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>' };
+Object.entries(ICON).forEach(([id, d]) => { const b = $("#" + id); b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + "</svg><span>" + b.textContent + "</span>"; });
 </script>
 </body>
 </html>
