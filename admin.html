@@ -95,11 +95,22 @@ main:has(#app:not(.hide)) .brand{display:none}
 .sb b{font-size:26px;color:#DCBCA0}
 .bar{position:sticky;top:0;z-index:20;margin:0 -16px 8px;padding:12px 16px;background:#2B1A36;border-bottom:1px solid var(--line)}
 .bar h1{margin:0;font-size:21px}
-.tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;display:flex;margin:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));gap:2px;background:#2B1A36;border-top:1px solid var(--line);overflow:visible}
-.tabs .chip{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:14px;padding:7px 2px;font-size:12px;color:#c9b4c4;background:transparent;position:relative;width:auto;box-shadow:none;font-weight:400}
-.tabs .chip svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+/* Mobile-first right-side drawer: the backdrop and panel both cover the full height */
+.tabs{position:fixed;inset:0;z-index:40;display:block;width:100%;height:100dvh;margin:0;padding:0;background:transparent;border:0;overflow:hidden;visibility:hidden;pointer-events:none}
+.tabs::before{content:"";position:absolute;inset:0;z-index:0;background:rgba(8,4,12,.72);opacity:0;transition:opacity .22s}
+.tabs.open{visibility:visible;pointer-events:auto}
+.tabs.open::before{opacity:1}
+.tabs .nav-panel{position:absolute;top:0;right:0;bottom:0;z-index:1;display:flex;flex-direction:column;align-items:stretch;gap:0;width:min(88vw,340px);min-height:100dvh;padding:0 0 calc(18px + env(safe-area-inset-bottom));overflow-y:auto;background:linear-gradient(180deg,#38213f 0%,#2B1A36 48%,#21142B 100%);border-left:1px solid rgba(198,161,126,.45);box-shadow:-18px 0 55px rgba(0,0,0,.38);transform:translateX(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.tabs.open .nav-panel{transform:translateX(0)}
+.tabs .nav-panel::before{content:"DIVA MODERNE MODE\A ADMINISTRATION";white-space:pre;display:block;padding:26px 22px 20px;border-bottom:1px solid var(--line);color:#DCBCA0;font:italic 500 18px/1.5 'Cormorant Garamond',serif;letter-spacing:.08em;text-align:left;direction:ltr}
+.tabs .chip{position:relative;z-index:2;flex:none;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;width:100%;min-height:58px;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:14px 20px;font-size:16px;color:#c9b4c4;background:transparent;box-shadow:none;font-weight:400;text-align:right;direction:rtl;transform:none;transition:background .2s,color .2s}
+.tabs .chip svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .tabs .chip.on{background:rgba(198,161,126,.18);color:#DCBCA0;font-weight:500}
-.tabs .chip[data-n]::after{content:attr(data-n);position:absolute;top:1px;inset-inline-end:calc(50% - 24px);background:#B65479;color:#fff;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center;padding:0 4px}
+.tabs .chip[data-n]::after{content:attr(data-n);position:absolute;top:8px;inset-inline-end:14px;background:#B65479;color:#fff;border-radius:99px;min-width:17px;height:17px;font-size:10px;display:grid;place-items:center;padding:0 4px}
+.tabs .chip:last-child{margin-top:auto;border-top:1px solid var(--line);border-bottom:0;color:#DCBCA0}
+#navToggle{width:auto;min-width:52px;padding:.55em 1em;margin-inline-start:auto;border-radius:14px;box-shadow:none;white-space:nowrap}
+#navToggle[aria-expanded=true]{background:rgba(198,161,126,.18);border-color:var(--gold)}
+@media(min-width:760px){.tabs .nav-panel{width:min(36vw,360px)}}
 #sub{display:flex;gap:8px;margin:0 0 12px}#sub .chip{flex:1;text-align:center}
 .qa{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}.qa button{padding:.9em .6em;font-size:15px}
 .empty{padding:40px 0}
@@ -121,8 +132,8 @@ main:has(#app:not(.hide)) .brand{display:none}
   </section>
 
   <section id="app" class="hide">
-    <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="out">خروج</button></div>
-    <div class="tabs"><button class="chip on" id="tH">الرئيسية</button><button class="chip" id="tO">الطلبيات</button><button class="chip" id="tP">المنتجات</button><button class="chip" id="tM">المزيد</button></div>
+    <div class="bar"><h1>لوحة التحكم</h1><button class="ghost" id="navToggle" type="button" aria-controls="adminNav" aria-expanded="false">☰ القائمة</button><button class="ghost" id="out">خروج</button></div>
+    <div class="tabs" id="adminNav" aria-label="قائمة أقسام الإدارة"><div class="nav-panel"><button class="chip on" id="tH" type="button">الرئيسية</button><button class="chip" id="tO" type="button">الطلبيات</button><button class="chip" id="tP" type="button">المنتجات</button><button class="chip" id="tM" type="button">المزيد</button><button class="chip" id="navClose" type="button">× إغلاق القائمة</button></div></div>
     <div id="sub" class="hide"><button class="chip on" id="sR">العروض</button><button class="chip" id="sV">التقييمات</button><button class="chip" id="sT">الإعدادات</button></div>
     <p class="err" id="ae"></p>
     <div id="po"><div class="stats" id="stats"></div><input id="q" placeholder="بحث: الاسم أو الهاتف أو رقم الطلبية" style="margin-bottom:10px"><p class="sub" id="cnt"></p><div class="chips" id="chips"></div><div id="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div>
@@ -172,7 +183,9 @@ onAuthStateChanged(auth, user => {
   if (unsub) { unsub(); unsub = null; }
   if (unsubP) { unsubP(); unsubP = null; }
   unsubX.forEach(f => f()); unsubX = [];
-  if (!user) { orders = []; $("#pw").value = ""; return; }
+  if (!user) { orders = []; $("#pw").value = ""; closeNav(); return; }
+  showTab("h");
+  closeNav();
   const fail = n => err => { console.error(err); $("#ae").textContent = "تعذّر تحميل " + n + " (" + err.code + "). الصقي القواعد الجديدة في Firestore."; };
   unsubX.push(onSnapshot(collection(db, "promos"), snap => { promos = {}; snap.docs.forEach(d => { promos[d.id] = d.data(); }); bump("promos"); renderPr(); }, fail("العروض")));
   unsubX.push(onSnapshot(collection(db, "pcolors"), snap => { pcol = {}; snap.docs.forEach(d => { pcol[d.id] = d.data().imgs || []; }); renderP(); }, fail("صور الألوان")));
@@ -223,7 +236,8 @@ function card(o) {
   links.append(tel, wa);
   c.append(links);
   c.append(el("p", "m", [o.wilaya, o.commune, o.address].filter(Boolean).join("، ")));
-  c.append(el("p", "m", "التوصيل: " + (o.delivery || "")));
+  const shipInfo = o.shipping == null ? "" : " · أجرة التوصيل: " + (Number(o.shipping) > 0 ? money(o.shipping) : "مجاني");
+  c.append(el("p", "m", "التوصيل: " + (o.delivery || "") + shipInfo));
   if (o.notes) c.append(el("p", "m", "ملاحظات: " + o.notes));
   if (Array.isArray(o.lines) && o.lines.length) {
     o.lines.forEach(l => { const r = el("div", "ln"); if (l.img) { const i = el("img"); i.src = l.img; i.onclick = () => { i.style.width = i.style.width ? "" : "160px"; i.style.height = i.style.height ? "" : "auto"; }; r.append(i); } else r.append(el("div", "ph", "✦")); const d = el("div"); d.append(el("div", "", l.n || ""), el("small", "", "المقاس: " + (l.s || "-") + "  ·  الكمية: " + (l.q || 1)), el("div", "", money((l.p || 0) * (l.q || 1)))); r.append(d); c.append(r); });
@@ -239,7 +253,7 @@ function card(o) {
   };
   c.append(sel);
   const a = el("div", "acts");
-  a.append(act("نسخ الطلبية", "ghost", async () => { try { await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.items, "المجموع: " + money(o.total)].join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
+  a.append(act("نسخ الطلبية", "ghost", async () => { try { await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.shipping == null ? "" : "أجرة التوصيل: " + (Number(o.shipping) > 0 ? money(o.shipping) : "مجاني"), o.items, "المجموع: " + money(o.total)].filter(Boolean).join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
     act("حذف", "ghost danger", () => { if (confirm("حذف هذه الطلبية نهائياً؟")) deleteDoc(doc(db, "orders", o.id)); }));
   c.append(a);
   return c;
@@ -252,7 +266,7 @@ const loadBI = async () => { if (!BI) { const r = await fetch("builtin-products.
 const money = n => Number(n || 0).toLocaleString("fr-FR") + " DZD";
 let subTab = "r";
 const PANELS = { h: "#ps", o: "#po", p: "#pp", r: "#pr", v: "#pv", t: "#pt" };
-const showTab = t => {
+function showTab(t) {
   const sec = ["r", "v", "t"].includes(t), main = sec || t === "m" ? "m" : t;
   if (sec) subTab = t;
   const cur = main === "m" ? subTab : t;
@@ -261,8 +275,23 @@ const showTab = t => {
   $("#sub").classList.toggle("hide", main !== "m");
   [["r", "#sR"], ["v", "#sV"], ["t", "#sT"]].forEach(([k, id]) => $(id).classList.toggle("on", main === "m" && k === cur));
   window.scrollTo && window.scrollTo(0, 0);
+}
+[["#tH", "h"], ["#tO", "o"], ["#tP", "p"], ["#tM", "m"], ["#sR", "r"], ["#sV", "v"], ["#sT", "t"]].forEach(([id, k]) => { $(id).onclick = () => { showTab(k); closeNav(); }; });
+function closeNav() {
+  $(".tabs").classList.remove("open");
+  document.body.classList.remove("nav-open");
+  $("#navToggle").setAttribute("aria-expanded", "false");
+  $("#navToggle").textContent = "☰ القائمة";
+}
+$("#navToggle").onclick = () => {
+  const opened = $(".tabs").classList.toggle("open");
+  document.body.classList.toggle("nav-open", opened);
+  $("#navToggle").setAttribute("aria-expanded", String(opened));
+  $("#navToggle").textContent = opened ? "× إغلاق" : "☰ القائمة";
 };
-[["#tH", "h"], ["#tO", "o"], ["#tP", "p"], ["#tM", "m"], ["#sR", "r"], ["#sV", "v"], ["#sT", "t"]].forEach(([id, k]) => { $(id).onclick = () => showTab(k); });
+$("#navClose").onclick = closeNav;
+$(".tabs").addEventListener("click", e => { if (e.target === $(".tabs")) closeNav(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeNav(); });
 const newForm = () => ({ id: "p" + Date.now().toString(36), n: ["", "", ""], d: ["", "", ""], p: "", o: "", z: "S,M,L,XL,XXL", colors: [{ n: "", c: "#C6A17E", imgs: [] }], hidden: false, ord: "", sp: false, fd: false, fh: false });
 const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 700 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", .62)); }; im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); });
 const PAL = [["أسود", "#111111"], ["أبيض", "#F5F5F5"], ["رمادي", "#8A8A8A"], ["فضي", "#C9CCD2"], ["ذهبي", "#D4A937"], ["بيج", "#D9C3A5"], ["شامبانيا", "#E4C9B6"], ["بني", "#6B4226"], ["وردي", "#E8A0B4"], ["وردي فاتح", "#F3C6D0"], ["وردي ذهبي", "#E3A08A"], ["وردي قديم", "#B96A78"], ["أحمر", "#C0262D"], ["عنابي", "#6D1A36"], ["برتقالي", "#E07B2D"], ["أصفر", "#F0D24A"], ["أخضر", "#3F8F4F"], ["زيتي", "#6B6B2F"], ["أخضر زمردي", "#0E6B5C"], ["سماوي", "#4FB5D6"], ["أزرق", "#2B5DAA"], ["كحلي", "#16224A"], ["بنفسجي", "#6B3FA0"], ["موف", "#9B7BC1"], ["وردي غباري", "#D4A5A5"], ["وردي بودري", "#F0D2D2"], ["أخضر سيج", "#9CAF88"], ["أخضر نعناعي", "#A8D5BA"], ["أخضر غابات", "#2F4F3A"], ["كاكي", "#7A7A4A"], ["أزرق بترولي", "#1F5C6B"], ["أزرق سماوي", "#8EC5E8"], ["أزرق رمادي", "#7A8FA3"], ["أزرق ملكي", "#2748A8"], ["أزرق باودر", "#B7CBE0"], ["رمادي فحمي", "#3A3A3C"], ["بيج رملي", "#D8C3A0"], ["نبيتي", "#7B2D43"], ["خردلي", "#D1A02A"], ["فوشيا", "#C2185B"], ["مرجاني", "#F08A7A"], ["خوخي", "#F5B895"], ["طوبي", "#C0664A"], ["نحاسي", "#B4693E"], ["برونزي", "#A8743A"], ["كاميل", "#B88A4F"], ["موكا", "#8B6B57"], ["كريمي", "#F3E9D2"], ["لافندر", "#C8B6E2"], ["ليلكي", "#BFA3D0"], ["أرجواني", "#5A2A55"], ["بني شوكولاتة", "#4A2C20"]];
@@ -473,15 +502,17 @@ const bump = k => { if (!firstSnap[k]) { firstSnap[k] = 1; return; } clearTimeou
 const reshrink = (src, mx, q) => new Promise(ok => { const im = new Image(); im.onload = () => { const k = Math.min(1, mx / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL("image/jpeg", q)); }; im.onerror = () => ok(src); im.src = src; });
 function renderT() {
   const P = $("#pt"); P.textContent = "";
-  const s = { free: 10000, rates: [[450, 300], [650, 450], [900, 650], [1400, 1000]], ...settings }, box = el("div", "box fm");
+  const s = { free: 10000, freeDesk: true, freeHome: true, freeDeskPromo: false, freeHomePromo: false, rates: [[450, 300], [650, 450], [900, 650], [1400, 1000]], ...settings }, box = el("div", "box fm");
   box.append(el("h2", "", "إعدادات التوصيل"), el("p", "sub", "تُطبَّق على الطلبيات الجديدة في المتجر خلال دقيقة تقريباً."));
   const fi = el("input"); fi.type = "number"; fi.value = s.free; box.append(el("label", "", "حد التوصيل المجاني (DZD)"), fi);
+  const fd = el("input"), fh = el("input"), fdp = el("input"), fhp = el("input"); fd.type = fh.type = fdp.type = fhp.type = "checkbox"; fd.checked = !!s.freeDesk; fh.checked = !!s.freeHome; fdp.checked = !!s.freeDeskPromo; fhp.checked = !!s.freeHomePromo; fd.style.width = fh.style.width = fdp.style.width = fhp.style.width = "auto";
+  const lfd = el("label", "", "توصيل المكتب مجاني عند بلوغ الحد"), lfh = el("label", "", "توصيل المنزل مجاني عند بلوغ الحد"), lfdp = el("label", "", "عرض توصيل مجاني للمكتب (بدون شرط الحد)"), lfhp = el("label", "", "عرض توصيل مجاني للمنزل (بدون شرط الحد)"); lfd.prepend(fd); lfh.prepend(fh); lfdp.prepend(fdp); lfhp.prepend(fhp); box.append(lfd, lfh, lfdp, lfhp);
   const ins = s.rates.map((r, i) => { const a = el("input"), b = el("input"); a.type = b.type = "number"; a.value = r[0]; b.value = r[1]; box.append(el("label", "", "المنطقة " + (i + 1) + ": " + ZN[i]), el("small", "m", "سعر التوصيل للمنزل"), a, el("small", "m", "سعر التوصيل للمكتب (Stop Desk)"), b); return [a, b]; });
   const er = el("p", "err"); box.append(er);
   box.append(act("حفظ الإعدادات", "", async () => {
     const free = Number(fi.value), rates = ins.map(([a, b]) => [Number(a.value), Number(b.value)]);
     if (!(free > 0) || rates.some(r => !(r[0] >= 0) || !(r[1] >= 0))) return er.textContent = "تأكدي من الأرقام.";
-    try { await setDoc(doc(db, "settings", "main"), { free, rates }); er.textContent = "تم الحفظ."; } catch (e) { console.error(e); er.textContent = "تعذّر الحفظ (" + e.code + ")."; }
+    try { await setDoc(doc(db, "settings", "main"), { free, freeDesk: fd.checked, freeHome: fh.checked, freeDeskPromo: fdp.checked, freeHomePromo: fhp.checked, rates }); er.textContent = "تم الحفظ."; } catch (e) { console.error(e); er.textContent = "تعذّر الحفظ (" + e.code + ")."; }
   }));
   P.append(box);
 }
