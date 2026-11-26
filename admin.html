@@ -54,6 +54,10 @@ a{color:var(--gold)}
 .acts .ghost{flex:1}.danger{color:var(--pink)!important}
 .fm label{margin-top:12px}.fm h2{font:500 20px Tajawal,sans-serif;color:var(--champ);margin:0 0 8px}
 .cb{border:1px solid var(--line);border-radius:20px;padding:12px;margin:10px 0}
+.color-names{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.color-names label{margin:4px 0 5px;font-size:13px}
+.color-names input{min-width:0;border-radius:12px;padding:.65em .85em;font-size:14px}
+@media(max-width:560px){.color-names{grid-template-columns:1fr;gap:5px}}
 .cb input[type=color]{height:44px;padding:4px}
 .th{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.th div{position:relative}.th img{width:64px;height:80px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
 .th b{position:absolute;top:-6px;inset-inline-end:-6px;background:var(--pink);color:var(--plum);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:14px;cursor:pointer}
@@ -231,9 +235,14 @@ function card(o) {
   c.append(r, el("div", "name", o.name || ""));
   const links = el("div", "links");
   const tel = el("a", "", o.phone || ""); tel.href = "tel:" + (o.phone || "");
-  const digits = String(o.phone || "").replace(/\D/g, "").replace(/^0/, "213");
-  const wa = el("a", "", "WhatsApp"); wa.href = "https://wa.me/" + digits; wa.target = "_blank"; wa.rel = "noopener";
-  links.append(tel, wa);
+  let digits = String(o.phone || "").replace(/\D/g, "");
+  if (digits.startsWith("00213")) digits = digits.slice(2);
+  else if (digits.startsWith("0")) digits = "213" + digits.slice(1);
+  else if (digits && !digits.startsWith("213")) digits = "213" + digits;
+  if (o.phone) {
+    links.append(tel);
+    if (digits.length >= 9) { const wa = el("a", "", "WhatsApp"); wa.href = "https://wa.me/" + digits; wa.target = "_blank"; wa.rel = "noopener"; links.append(wa); }
+  }
   c.append(links);
   c.append(el("p", "m", [o.wilaya, o.commune, o.address].filter(Boolean).join("، ")));
   const shipInfo = o.shipping == null ? "" : " · أجرة التوصيل: " + (Number(o.shipping) > 0 ? money(o.shipping) : "مجاني");
@@ -246,15 +255,16 @@ function card(o) {
   c.append(t);
   const sel = el("select");
   Object.entries(STATUS).forEach(([k, label]) => { const op = el("option", "", label); op.value = k; sel.append(op); });
-  sel.value = o.status || "new";
+  const safeStatus = Object.prototype.hasOwnProperty.call(STATUS, o.status) ? o.status : "new";
+  sel.value = safeStatus;
   sel.onchange = async () => {
     try { await updateDoc(doc(db, "orders", o.id), { status: sel.value }); }
-    catch (e) { console.error(e); $("#ae").textContent = "تعذّر تحديث الحالة (" + e.code + ")."; sel.value = o.status || "new"; }
+    catch (e) { console.error(e); $("#ae").textContent = "تعذّر تحديث الحالة (" + (e.code || e.message) + ")."; sel.value = safeStatus; }
   };
   c.append(sel);
   const a = el("div", "acts");
-  a.append(act("نسخ الطلبية", "ghost", async () => { try { await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.shipping == null ? "" : "أجرة التوصيل: " + (Number(o.shipping) > 0 ? money(o.shipping) : "مجاني"), o.items, "المجموع: " + money(o.total)].filter(Boolean).join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
-    act("حذف", "ghost danger", () => { if (confirm("حذف هذه الطلبية نهائياً؟")) deleteDoc(doc(db, "orders", o.id)); }));
+  a.append(act("نسخ الطلبية", "ghost", async () => { try { const detail = Array.isArray(o.lines) && o.lines.length ? o.lines.map(l => [l.n || l.g, "المقاس: " + (l.s || "-"), "الكمية: " + (l.q || 1), money((l.p || 0) * (l.q || 1))].join(" · ")).join("\n") : (o.items || ""); await navigator.clipboard.writeText([o.ref, o.name, o.phone, [o.wilaya, o.commune, o.address].filter(Boolean).join("، "), o.delivery, o.shipping == null ? "" : "أجرة التوصيل: " + (Number(o.shipping) > 0 ? money(o.shipping) : "مجاني"), detail, "المجموع: " + money(o.total)].filter(Boolean).join("\n")); $("#ae").textContent = "تم النسخ."; } catch (_) { $("#ae").textContent = "تعذّر النسخ."; } }),
+    act("حذف", "ghost danger", async () => { if (!confirm("حذف هذه الطلبية نهائياً؟")) return; try { await deleteDoc(doc(db, "orders", o.id)); } catch (e) { console.error(e); $("#ae").textContent = "تعذّر حذف الطلبية (" + (e.code || e.message) + ")."; } }));
   c.append(a);
   return c;
 }
@@ -353,14 +363,26 @@ function renderForm() {
     inp("ترتيب الظهور في المتجر (الرقم الأصغر أولاً، وفارغ = بعد الباقي)", "ord", "number");
     [["sp", " شارة «عرض خاص» على بطاقة المنتج"], ["fd", " التوصيل للمكتب (Stop Desk) مجاني لهذا المنتج"], ["fh", " التوصيل للمنزل مجاني لهذا المنتج"]].forEach(([k, label]) => { const c = el("input"); c.type = "checkbox"; c.checked = !!form[k]; c.style.width = "auto"; c.onchange = () => { form[k] = c.checked; }; const l = el("label", "", label); l.prepend(c); F.append(l); });
     form.colors.forEach((c, k) => {
-      const b = el("div", "cb"), nm = el("input"), cl = el("input"), fi = el("input"), th = el("div", "th");
-      nm.placeholder = "اسم اللون (مثال: ذهبي)"; nm.value = c.n; nm.oninput = () => { c.n = nm.value; c.nn = null; c.man = true; };
+      const b = el("div", "cb"), cl = el("input"), fi = el("input"), th = el("div", "th");
+      const currentNames = Array.isArray(c.nn) && c.nn.length === 3 ? [...c.nn] : [c.n || "", c.n || "", c.n || ""];
+      const namesBox = el("div", "color-names");
+      [[0, "اسم اللون بالفرنسية", "مثال: Rose poudré", "ltr"], [1, "اسم اللون بالإنجليزية", "Example: Powder pink", "ltr"], [2, "اسم اللون بالعربية", "مثال: وردي باهت", "rtl"]].forEach(([idx, title, placeholder, dir]) => {
+        const label = el("label", "", title), nameInput = el("input");
+        nameInput.type = "text"; nameInput.value = currentNames[idx] || ""; nameInput.placeholder = placeholder; nameInput.dir = dir; nameInput.autocomplete = "off";
+        nameInput.oninput = () => {
+          if (!Array.isArray(c.nn) || c.nn.length !== 3) c.nn = [...currentNames];
+          c.nn[idx] = nameInput.value;
+          c.n = String(c.nn[2] || "").trim() || String(c.nn[0] || "").trim() || String(c.nn[1] || "").trim() || "";
+          c.man = true;
+        };
+        namesBox.append(label, nameInput);
+      });
       const au = act("تحديد اللون واسمه تلقائياً من الصورة الأولى", "ghost", async () => { if (!c.imgs.length) { $("#fe").textContent = "أضيفي صورة أولاً."; return; } c.man = false; await autoColor(c); renderForm(); });
       cl.type = "color"; cl.value = c.c; cl.oninput = () => { c.c = cl.value; };
       fi.type = "file"; fi.accept = "image/*"; fi.multiple = true;
       fi.onchange = async () => { const first = !c.imgs.length; for (const f of fi.files) { try { c.imgs.push(await shrink(f)); } catch (e) { $("#fe").textContent = "تعذّر قراءة صورة."; } } if (!c.man && c.imgs.length) await autoColor(c); renderForm(); };
       c.imgs.forEach((src, j) => { const w = el("div"), i = el("img"), x = el("b", "", "×"); i.src = src; x.onclick = async () => { c.imgs.splice(j, 1); if (!c.man && c.imgs.length) await autoColor(c); renderForm(); }; w.append(i, x); th.append(w); });
-      b.append(el("label", "", "اللون " + (k + 1) + " (يُحدَّد تلقائياً من أول صورة، ويمكنك تغييره)"), nm, cl, au, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
+      b.append(el("label", "", "اللون " + (k + 1) + " (يُحدَّد تلقائياً من أول صورة، ويمكنك تغييره)"), namesBox, cl, au, el("label", "", "الصور (الأولى هي الرئيسية)"), fi, th);
       if (form.colors.length > 1) b.append(act("حذف هذا اللون", "ghost danger", () => { form.colors.splice(k, 1); renderForm(); }));
       F.append(b);
     });
@@ -380,7 +402,12 @@ async function saveForm() {
   const first = a => a.find(x => x.trim()) || "";
   if (!first(f.n)) return err("اكتبي اسم المنتج.");
   const n = f.n.map(x => x.trim() || first(f.n).trim()), d = f.d.map(x => x.trim() || first(f.d).trim());
-  const colors = f.colors.map(c => ({ n: c.n.trim() || "—", c: c.c, imgs: c.imgs, ...(c.nn ? { nn: c.nn } : {}) })).filter(c => c.imgs.length);
+  const colors = f.colors.map(c => {
+    const rawNames = Array.isArray(c.nn) && c.nn.length === 3 ? c.nn.map(v => String(v || "").trim()) : [];
+    const fallback = String(c.n || "").trim() || rawNames.find(Boolean) || "—";
+    const nn = rawNames.length === 3 ? rawNames.map(v => v || fallback) : [fallback, fallback, fallback];
+    return { n: nn[2] || nn[0] || nn[1] || fallback, nn, c: c.c, imgs: c.imgs };
+  }).filter(c => c.imgs.length);
   if (!colors.length) return err("أضيفي صورة واحدة على الأقل.");
   const z = f.z.split(",").map(x => x.trim()).filter(Boolean);
   const meta = { n, d, p, o, z, colors: colors.map(({ imgs, man, ...c }) => ({ ...c, cnt: imgs.length })), hidden: !!f.hidden, sp: !!f.sp, fd: !!f.fd, fh: !!f.fh, ord: f.ord === "" || f.ord == null ? null : Number(f.ord), createdAt: f.createdAt || Date.now() };
